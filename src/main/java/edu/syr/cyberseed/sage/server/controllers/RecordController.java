@@ -5,10 +5,8 @@ import java.util.Arrays;
 import edu.syr.cyberseed.sage.server.entities.Record;
 import edu.syr.cyberseed.sage.server.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -17,7 +15,7 @@ public class RecordController {
     @Autowired
     RecordRepository repository;
 
-    @GetMapping("/save")
+    @RequestMapping(value = "/save", method = RequestMethod.GET)
     public String process(){
 
         repository.save(Arrays.asList(new Record("Jack", "Smith"),
@@ -29,8 +27,7 @@ public class RecordController {
         return "Done";
     }
 
-
-    @GetMapping("/findAll")
+    @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public String findAll(){
 
         String result = "";
@@ -42,14 +39,14 @@ public class RecordController {
         return result;
     }
 
-    @GetMapping("/findbyrecordID")
+    @RequestMapping(value = "/findbyrecordID", method = RequestMethod.GET)
     public String findByRecordID(@RequestParam("recordID") long recordID){
         String result = "";
         result = repository.findOne(recordID).toString();
         return result;
     }
 
-    @GetMapping("/findbyowner")
+    @RequestMapping(value = "/findbyowner", method = RequestMethod.GET)
     public String fetchDataByOwner(@RequestParam("owner") String owner){
         String result = "";
 
@@ -59,7 +56,7 @@ public class RecordController {
         return result;
     }
 
-    @GetMapping("/findbypatient")
+    @RequestMapping(value = "/findbypatient", method = RequestMethod.GET)
     public String fetchDataByPatient(@RequestParam("patient") String patient){
         String result = "";
 

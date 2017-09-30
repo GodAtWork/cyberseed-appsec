@@ -29,10 +29,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
         // allow stateless authorized requests
         http.httpBasic().and().sessionManagement()
                 .sessionCreationPolicy( SessionCreationPolicy.STATELESS )
-                .and().authorizeRequests().antMatchers("/**").hasRole( "USER" );
-
-        // specify the per URI role requirements
-        http.authorizeRequests()
+                .and().authorizeRequests()
                 .antMatchers("/findAll").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/findbyrecordID").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/findbypatient").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
