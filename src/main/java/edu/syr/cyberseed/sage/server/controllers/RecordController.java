@@ -30,7 +30,7 @@ public class RecordController {
     }
 
 
-    @GetMapping("/findall")
+    @GetMapping("/findAll")
     public String findAll(){
 
         String result = "";
