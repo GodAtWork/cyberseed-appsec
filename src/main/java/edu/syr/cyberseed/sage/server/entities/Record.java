@@ -32,4 +32,8 @@ public class Record implements Serializable {
         this.patient = patient;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Record[recordID=%d, patient='%s', owner='%s']", recordID, patient, owner);
+    }
 }
