@@ -1,12 +1,9 @@
 package edu.syr.cyberseed.sage.server.repositories;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 import edu.syr.cyberseed.sage.server.entities.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-
-@Repository
-public interface UserRepository extends CrudRepository<User, Long> {
-    User findByName(String name);
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByUsername(String username);
 }
