@@ -1,5 +1,7 @@
 package edu.syr.cyberseed.sage.server.entities;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -37,3 +39,5 @@ public class Role {
         this.users = users;
     }
 }
+
+
