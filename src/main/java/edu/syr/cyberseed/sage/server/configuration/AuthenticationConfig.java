@@ -18,7 +18,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authenticationMgr) throws Exception {
         authenticationMgr.inMemoryAuthentication()
-                .withUser("sampleuser").password("123").authorities("ROLE_USER")
+                .withUser("sampleuser").password("123").authorities("ROLE_USER","ROLE_ADD_PATIENT")
                 .and()
                 .withUser("admin").password("123").authorities("ROLE_USER","ROLE_ADMIN");
     }
@@ -27,6 +27,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         // allow stateless authorized requests and apply per service role based permissions
+        http.csrf().disable();
         http.httpBasic().and().sessionManagement()
                 .sessionCreationPolicy( SessionCreationPolicy.STATELESS )
                 .and().authorizeRequests()

@@ -13,19 +13,18 @@ import java.util.Date;
 @Table(name = "patient")
 public class Patient {
 
-//    private static final long serialVersionUID = -3009157732241241604L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "Dob")
+    @Column(name = "dob")
     private Date dob;
 
-    @Column(name = "Ssn")
+    @Column(name = "ssn")
     private int ssn;
 
-    @Column(name = "Address")
+    @Column(name = "address")
     private String address;
 
     //private Set<User> username;
@@ -59,6 +58,13 @@ public class Patient {
     }
 
     protected Patient() {
+    }
+
+    public Patient(String username, Date dob, Integer ssn, String address) {
+        this.username = username;
+        this.dob = dob;
+        this.ssn = ssn;
+        this.address = address;
     }
 
     public Patient(String username, String address) {

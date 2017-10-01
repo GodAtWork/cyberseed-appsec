@@ -1,0 +1,1 @@
+curl --user sampleuser:123 -X POST -d '{"username":"patient11","password":"1234567891234567","fname":"Mary","lname":"Smith","dob":"1980-09-03T00:00:00.000Z","ssn":"555555555","address":"123 Maple Ln. Syracuse NY 12303"}' -H "Content-Type: application/json" http://localhost:8080/createPatient
