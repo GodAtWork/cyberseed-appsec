@@ -1,27 +1,30 @@
 package edu.syr.cyberseed.sage.server.entities;
 
-
-import javax.persistence.*;
-import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "user")
 public class User {
-    private Long id;
-    private String username;
-    private String password;
-    private String passwordConfirm;
-    private Set<Role> roles;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "username")
+    private String username;
+    
+    @Column(name = "password")
+    private String password;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "Fname")
+    private String fname;
+    
+    @Column(name = "Lname")
+    private String lname;
 
     public String getUsername() {
         return username;
@@ -38,23 +41,22 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    @Transient
-    public String getPasswordConfirm() {
-        return passwordConfirm;
+    
+    public String getFname() {
+        return fname;
     }
 
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
+    public void setFname(String fname) {
+        this.fname = fname;
+    }
+    public String getLname() {
+        return lname;
     }
 
-    @ManyToMany
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setLname(String lname) {
+        this.lname = lname;
     }
 }
+
+
+   
