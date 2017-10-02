@@ -27,7 +27,7 @@ public class RecordController {
     UserRepository userRepository;
     @Autowired
     PatientRepository patientRepository;
-
+    //COMMENTED
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
