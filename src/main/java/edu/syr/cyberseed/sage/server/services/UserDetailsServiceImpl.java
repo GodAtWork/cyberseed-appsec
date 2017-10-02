@@ -9,6 +9,7 @@ import edu.syr.cyberseed.sage.server.entities.User;
 import edu.syr.cyberseed.sage.server.entities.UserPermissions;
 import edu.syr.cyberseed.sage.server.repositories.UserPermissionsRepository;
 import edu.syr.cyberseed.sage.server.repositories.UserRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
@@ -38,20 +36,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
+        logger.info("Logging in user " + user.getUsername());
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
         // from the user record parse the json list of roles as a list
         // of strings and add each as a spring authority
-        ObjectMapper mapper = new ObjectMapper();
+        List<String> roleList = new ArrayList<String>();
         try {
+            ObjectMapper mapper = new ObjectMapper();
             String jsonRoleNames = user.getRoles();
             Map<String, Object> mapObject = mapper.readValue(jsonRoleNames,
                     new TypeReference<Map<String, Object>>() {
                     });
-            List<String> roleList = (List<String>) mapObject.get("roles");
+            roleList = (List<String>) mapObject.get("roles");
             for (String roleName : roleList) {
-               logger.debug("Found role " + roleName + " for " + user.getUsername());
-                grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
+                if (StringUtils.isNotEmpty(roleName)) {
+                    logger.info("Found role " + roleName + " for " + user.getUsername());
+                    grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
+                }
             }
         } catch (JsonGenerationException e) {
             e.printStackTrace();
@@ -63,9 +65,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             e.printStackTrace();
         }
 
-        /*for (UserPermissions role : user.getRoles()){
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-        }*/
+        // lookup and add the correct permissions for each of the roles listed in the user record
+        for (String roleName : roleList) {
+            logger.info("Looking up permissions for role " + roleName);
+            UserPermissions permsForRole = permissionsRepository.findByRole(roleName);
+            if ( (permsForRole != null) && StringUtils.isNotEmpty(permsForRole.getPermissions())) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonRoleNames = permsForRole.getPermissions();
+                    Map<String, Object> mapObject = mapper.readValue(jsonRoleNames,
+                            new TypeReference<Map<String, Object>>() {
+                            });
+                    List<String> permList = (List<String>) mapObject.get("roles");
+                    for (String perm : permList) {
+                        if (StringUtils.isNotEmpty(perm)) {
+                            logger.info("Due to role " + roleName + " adding perm " + perm + " for " + user.getUsername());
+                            grantedAuthorities.add(new SimpleGrantedAuthority(perm));
+                        }
+                    }
+                } catch (JsonGenerationException e) {
+                    e.printStackTrace();
+                } catch (JsonMappingException e) {
+                    e.printStackTrace();
+                } catch (JsonParseException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
