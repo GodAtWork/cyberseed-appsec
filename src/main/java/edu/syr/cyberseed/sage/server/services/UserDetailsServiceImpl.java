@@ -94,6 +94,61 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 }
             }
         }
+
+        // apply any custom included permissions for this user
+        if (StringUtils.isNotEmpty(user.getCustom_permissions_to_add())) {
+            List<String> customPermAddList = new ArrayList<String>();
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonRoleNames = user.getCustom_permissions_to_add();
+                Map<String, Object> mapObject = mapper.readValue(jsonRoleNames,
+                        new TypeReference<Map<String, Object>>() {
+                        });
+                customPermAddList = (List<String>) mapObject.get("roles");
+                for (String roleName : customPermAddList) {
+                    if (StringUtils.isNotEmpty(roleName)) {
+                        logger.info("Found custom perm " + roleName + " to apply to " + user.getUsername());
+                        grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
+                    }
+                }
+            } catch (JsonGenerationException e) {
+                e.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // finally apply any custom excluded permissions for this user
+        if (StringUtils.isNotEmpty(user.getCustom_permissions_to_remove())) {
+            List<String> customPermRemoveList = new ArrayList<String>();
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonRoleNames = user.getCustom_permissions_to_add();
+                Map<String, Object> mapObject = mapper.readValue(jsonRoleNames,
+                        new TypeReference<Map<String, Object>>() {
+                        });
+                customPermRemoveList = (List<String>) mapObject.get("roles");
+                for (String roleName : customPermRemoveList) {
+                    if (StringUtils.isNotEmpty(roleName)) {
+                        logger.info("Found custom perm " + roleName + " that should be not applied to " + user.getUsername());
+                        grantedAuthorities.remove(new SimpleGrantedAuthority(roleName));
+                    }
+                }
+            } catch (JsonGenerationException e) {
+                e.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         logger.info("Assessing roles and permissions for the current user " + user.getUsername() + " is complete.");
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
