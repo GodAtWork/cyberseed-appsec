@@ -14,16 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableWebSecurity
 public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
 
-    // sample users pre-users in DB
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder authenticationMgr) throws Exception {
-        authenticationMgr.inMemoryAuthentication()
-                .withUser("sampleuser").password("123").authorities("ROLE_USER","ROLE_ADD_PATIENT")
-                .and()
-                .withUser("admin").password("123").authorities("ROLE_USER","ROLE_ADMIN");
-    }
-
-    @Override
+   @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         // allow stateless authorized requests and apply per service role based permissions
