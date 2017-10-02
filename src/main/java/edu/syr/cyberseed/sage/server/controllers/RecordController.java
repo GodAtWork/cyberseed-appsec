@@ -1,19 +1,16 @@
 package edu.syr.cyberseed.sage.server.controllers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import edu.syr.cyberseed.sage.server.entities.Patient;
-import edu.syr.cyberseed.sage.server.entities.Record;
-import edu.syr.cyberseed.sage.server.entities.ResultValue;
-import edu.syr.cyberseed.sage.server.entities.User;
+import edu.syr.cyberseed.sage.server.entities.*;
+import edu.syr.cyberseed.sage.server.entities.models.CustomPermissionsModel;
 import edu.syr.cyberseed.sage.server.entities.models.PatientUserModel;
 import edu.syr.cyberseed.sage.server.repositories.PatientRepository;
+import edu.syr.cyberseed.sage.server.repositories.PermissionsRepository;
 import edu.syr.cyberseed.sage.server.repositories.RecordRepository;
 import edu.syr.cyberseed.sage.server.repositories.UserRepository;
 import flexjson.JSONSerializer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +28,9 @@ public class RecordController {
     UserRepository userRepository;
     @Autowired
     PatientRepository patientRepository;
-    //COMMENTED
+    @Autowired
+    PermissionsRepository permissionListRepository;
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -39,6 +38,7 @@ public class RecordController {
 
     @RequestMapping(value = "/createPatient", method = RequestMethod.POST)
      public ResultValue createPatient(@RequestBody @Valid PatientUserModel user) {
+        logger.info("Starting execution of service /createPatient");
         String resultString = "FAILURE";
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
@@ -73,60 +73,65 @@ public class RecordController {
 
         ResultValue result = new ResultValue();
         result.setResult(resultString);
+        logger.info("Completed execution of service /createPatient");
         return result;
     }
 
+    @RequestMapping(value = "/editPerm", method = RequestMethod.POST)
+    public ResultValue editPerm(@RequestBody @Valid CustomPermissionsModel permissionsLists) {
+        logger.info("Starting execution of service /editPerm");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(permissionsLists.getUsername());
 
-//DUMMY EXAMPLES
-    @RequestMapping(value = "/save", method = RequestMethod.GET)
-    public String process() {
+        if ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) {
+            // parse list of permissions that should be added to role based selection of permissions for this user
+            List<String> userSuppliedIncludeList = permissionsLists.getCustomadds();
+            ArrayList<String> includeList = new ArrayList<String>();
+            for (String perm : userSuppliedIncludeList) {
+                Permissions permsObject = permissionListRepository.findByPermission(perm);
+                if ((permsObject != null) && (StringUtils.isNotEmpty(permsObject.getPermission()))) {
+                    logger.info("Permission " + permsObject.getPermission() + " was requested to be added to " + user.getUsername());
+                    includeList.add(permsObject.getPermission());
+                }
+            }
 
-        recordRepository.save(Arrays.asList(new Record("Jack", "Smith"),
-                new Record("Adam", "Johnson"),
-                new Record("Kim", "Smith"),
-                new Record("David", "Williams"),
-                new Record("Peter", "Davis")));
+            // parse list of permissions that should be removed from role based selection of permissions for this user
+            List<String> userSuppliedExcludeList = permissionsLists.getCustomremoves();
+            ArrayList<String> excludeList = new ArrayList<String>();
+            for (String perm : userSuppliedExcludeList) {
+                Permissions permsObject = permissionListRepository.findByPermission(perm);
+                if ((permsObject != null) && (StringUtils.isNotEmpty(permsObject.getPermission()))) {
+                    logger.info("Permission " + permsObject.getPermission() + " was requested to be removed from " + user.getUsername());
+                    excludeList.add(permsObject.getPermission());
+                }
+            }
 
-        return "Done";
-    }
+            // update user object
 
-    @RequestMapping(value = "/findAll", method = RequestMethod.GET)
-    public String findAll() {
+            if (includeList.size() > 0) {
+                Map<String, Object> irolesJson = new HashMap<String, Object>();
+                irolesJson.put("roles", includeList);
+                JSONSerializer serializer = new JSONSerializer();
+                String includeRolesJson = serializer.include("roles").serialize(irolesJson);
+                user.setCustom_permissions_to_add(includeRolesJson);
+            }
+            if (excludeList.size() > 0) {
+                Map<String, Object> xrolesJson = new HashMap<String, Object>();
+                xrolesJson.put("roles", excludeList);
+                JSONSerializer xserializer = new JSONSerializer();
+                String excludeRolesJson = xserializer.include("roles").serialize(xrolesJson);
+                user.setCustom_permissions_to_remove(excludeRolesJson);
+            }
 
-        String result = "";
+            userRepository.save(user);
 
-        for (Record record : recordRepository.findAll()) {
-            result += record + "</br>";
+            if ((includeList.size() > 0) || (excludeList.size() > 0)) resultString = "SUCCESS";
         }
-
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Completed execution of service /editPerm");
         return result;
     }
 
-    @RequestMapping(value = "/findbyrecordID", method = RequestMethod.GET)
-    public String findByRecordID(@RequestParam("recordID") long recordID) {
-        String result = "";
-        result = recordRepository.findOne(recordID).toString();
-        return result;
-    }
-
-    @RequestMapping(value = "/findbyowner", method = RequestMethod.GET)
-    public String fetchDataByOwner(@RequestParam("owner") String owner) {
-        String result = "";
-
-        for (Record record : recordRepository.findByOwner(owner)) {
-            result += record + "</br>";
-        }
-        return result;
-    }
-
-    @RequestMapping(value = "/findbypatient", method = RequestMethod.GET)
-    public String fetchDataByPatient(@RequestParam("patient") String patient) {
-        String result = "";
-
-        for (Record record : recordRepository.findByPatient(patient)) {
-            result += record + "</br>";
-        }
-        return result;
-    }
 
 }

@@ -1,2 +1,8 @@
+Usage exmaples for service endpoints
+
+Service: /createPatient
 curl --user sysad:1234567891234567 -X POST -d '{"username":"patient11","password":"1234567891234567","fname":"Mary","lname":"Smith","dob":"1980-09-03T00:00:00.000Z","ssn":"555555555","address":"123 Maple Ln. Syracuse NY 12303"}' -H "Content-Type: application/json" http://localhost:8080/createPatient
 curl.exe --user sysad:1234567891234567 -H "Content-Type: application/json" -X POST http://localhost:8080/createPatient -d "{\"username\":\"patient12\",\"password\":\"1234567891234567\",\"fname\":\"Mary\",\"lname\":\"Smith\",\"dob\":\"1980-09-03T00:00:00.000Z\",\"ssn\":\"555555555\",\"address\":\"123 Maple Ln. Syracuse NY 12303\"}\"
+
+Service: /editPerm
+curl --user sysad:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm

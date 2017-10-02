@@ -242,4 +242,14 @@ CREATE TABLE `user_role_list` (
   PRIMARY KEY (`role`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- ----------------------------
+--  Table structure for `permissions_list`
+-- ----------------------------
+DROP TABLE IF EXISTS `permissions_list`;
+CREATE TABLE `permissions_list` (
+  `permission` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`permission`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 SET FOREIGN_KEY_CHECKS = 1;

@@ -79,7 +79,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     List<String> permList = (List<String>) mapObject.get("roles");
                     for (String perm : permList) {
                         if (StringUtils.isNotEmpty(perm)) {
-                            logger.info("Due to role " + roleName + " adding perm " + perm + " for " + user.getUsername());
+                            logger.info("Due to role " + roleName + " applying perm " + perm + " to " + user.getUsername());
                             grantedAuthorities.add(new SimpleGrantedAuthority(perm));
                         }
                     }
@@ -94,7 +94,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 }
             }
         }
-
+        logger.info("Assessing roles and permissions for the current user " + user.getUsername() + " is complete.");
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
 }
