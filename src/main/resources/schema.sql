@@ -207,41 +207,39 @@ CREATE TABLE `record_testresult` (
   CONSTRAINT `FK_record_testresult_user` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- ----------------------------
---  Table structure for `role`
--- ----------------------------
-DROP TABLE IF EXISTS `role`;
-CREATE TABLE `role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `permissions` varchar(255) NOT NULL,
-  `role_info` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
--- ----------------------------
---  Table structure for `role_user`
--- ----------------------------
-DROP TABLE IF EXISTS `role_user`;
-CREATE TABLE `role_user` (
-  `id` int(11) NOT NULL,
-  `uname` varchar(255) NOT NULL,
-  KEY `FK__role` (`id`),
-  KEY `FK__user` (`uname`),
-  CONSTRAINT `FK__role` FOREIGN KEY (`id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK__user` FOREIGN KEY (`uname`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
 --  Table structure for `user`
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `Fname` char(255) NOT NULL,
-  `Lname` char(255) NOT NULL,
+  `Fname` varchar(255) NOT NULL,
+  `Lname` varchar(255) NOT NULL,
+  `roles` varchar(2550) DEFAULT NULL,
+  `custom_permissions_to_add` varchar(2550) DEFAULT NULL,
+  `custom_permissions_to_remove` varchar(2550) DEFAULT NULL,
   PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+--  Table structure for `user_permissions_list`
+-- ----------------------------
+DROP TABLE IF EXISTS `user_permissions_list`;
+CREATE TABLE `user_permissions_list` (
+  `role` varchar(255) NOT NULL,
+  `default_permissions` varchar(2550) NOT NULL,
+  PRIMARY KEY (`role`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+--  Table structure for `user_role_list`
+-- ----------------------------
+DROP TABLE IF EXISTS `user_role_list`;
+CREATE TABLE `user_role_list` (
+  `role` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`role`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -93,27 +93,25 @@ BEGIN;
 INSERT INTO `record_testresult` VALUES ('1', '2017-09-30', 'doctor', 'a', 'aids');
 COMMIT;
 
-
--- ----------------------------
---  Records of `role`
--- ----------------------------
-BEGIN;
-INSERT INTO `role` VALUES ('1', 'ROLE_ADMIN', 'apat, epat. adoc, edoc, amed, emed, anurse, enurse, asys, esys, duser, aper, eraccess', 'System administraot'), ('2', 'ROLE_DOCTOR', 'apat, epat, amed, emed, anurse, enurse', 'Doctor'), ('3', 'ROLE_NURSE', 'apat, epat', 'Nurse'), ('4', 'ROLE_MAD', 'apat, epat, pii', 'Medical Administration'), ('5', 'ROLE_IAD', 'pii', 'Insurance Admin'), ('6', 'ROLE_PATIENT', 'none', 'Patient');
-COMMIT;
-
-
--- ----------------------------
---  Records of `role_user`
--- ----------------------------
-BEGIN;
-INSERT INTO `role_user` VALUES ('1', 'sysad'), ('2', 'doctor'), ('5', 'iad'), ('4', 'medad'), ('3', 'nurse'), ('6', 'patient');
-COMMIT;
-
 -- ----------------------------
 --  Records of `user`
 -- ----------------------------
 BEGIN;
-INSERT INTO `user` VALUES ('doctor', 'doctor', 'doctor', 'doctor'), ('iad', 'iad', 'iad', 'iad'), ('medad', 'medad', 'medad', 'medad'), ('nurse', 'nurse', 'nurse', 'nurse'), ('patient', 'patient', 'patient', 'patient'), ('sysad', 'sysad', 'sysad', 'sysad');
+INSERT INTO `user` VALUES ('doctor', 'doctor', 'Jane', 'Doe', '{\"roles\":[\"ROLE_USER\",\"ROLE_DOCTOR\"]}', null, null), ('iad', 'iad', 'Jeb', 'Downs', '{\"roles\":[\"ROLE_USER\",\"ROLE_INSURANCE_ADMIN\"]}', null, null), ('medad', 'medad', 'Joe', 'Davids', '{\"roles\":[\"ROLE_USER\",\"ROLE_MEDICAL_ADMIN\"]}', null, null), ('nurse', 'nurse', 'Jose', 'Davidson', '{\"roles\":[\"ROLE_USER\",\"ROLE_NURSE\"]}', null, null), ('patient', 'patient', 'Jaunita', 'Dun', '{\"roles\":[\"ROLE_USER\",\"ROLE_PATIENT\"]}', null, null), ('$2a$11$dhneQwwEDBo2MJoXR5rurOuucOPdVlRwlmgZfj6ePId5DrviKjEp2', 'patient11', 'Jerry', 'Smith', '{\"roles\":[\"ROLE_USER\",\"ROLE_PATIENT\"]}', null, null), ('sysad', 'sysad', 'Jake', 'Macklin', '{\"roles\":[\"ROLE_USER\",\"ROLE_SYSTEM_ADMIN\"]}', null, null);
+COMMIT;
+
+-- ----------------------------
+--  Records of `user_permissions_list`
+-- ----------------------------
+BEGIN;
+INSERT INTO `user_permissions_list` VALUES ('ROLE_DOCTOR', '{\"roles\":[\"ROLE_ADD_PATIENT\",\"ROLE_EDIT_PATIENT\",\"ROLE_ADD_MEDICAL_ADMIN\",\"ROLE_EDIT_MEDICAL_ADMIN\",\"ROLE_ADD_NURSE\",\"ROLE_EDIT_NURSE\"]}'), ('ROLE_INSURANCE_ADMIN', '{[\"ROLE_VIEW_PII\"]}'), ('ROLE_MEDICAL_ADMIN', '{\"roles\":[\"ROLE_ADD_PATIENT\",\"ROLE_EDIT_PATIENT\",\"ROLE_VIEW_PII\"]}'), ('ROLE_NURSE', '{\"roles\":[\"ROLE_ADD_PATIENT\",\"ROLE_EDIT_PATIENT\"]}'), ('ROLE_PATIENT', '{[\"\"]}'), ('ROLE_SYSTEM_ADMIN', '{\"roles\":[\"ROLE_ADD_PATIENT\",\"ROLE_EDIT_PATIENT\",\"ROLE_ADD_DOCTOR\",\"ROLE_EDIT_DOCTOR\",\"ROLE_ADD_MEDICAL_ADMIN\",\"ROLE_EDIT_MEDICAL_ADMIN\",\"ROLE_ADD_INSURANCE_ADMIN\",\"ROLE_EDIT_INSURANCE_ADMIN\",\"ROLE_ADD_NURSE\",\"ROLE_EDIT_NURSE\",\"ROLE_ADD_SYSTEM_ADMIN\",\"ROLE_EDIT_SYSTEM_ADMIN\",\"ROLE_DELETE_USER_PROFILE\",\"ROLE_ASSIGN_PERMISSIONS\",\"ROLE_EDIT_RECORD_ACCESS\"]}');
+COMMIT;
+
+-- ----------------------------
+--  Records of `user_role_list`
+-- ----------------------------
+BEGIN;
+INSERT INTO `user_role_list` VALUES ('ROLE_DOCTOR', 'A medical doctor.'), ('ROLE_INSURANCE_ADMIN', 'Insurance company representative.'), ('ROLE_MEDICAL_ADMIN', 'Administers information for doctors and nurses. Primary tasks include interfacing with Insurance Administrators.'), ('ROLE_NURSE', 'A medical nurse.'), ('ROLE_PATIENT', 'Medical Patient.'), ('ROLE_SYSTEM_ADMIN', 'Highest default permissions.  Administers the SMIRK system.'), ('ROLE_USER', 'Any user of SMIRK system.');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

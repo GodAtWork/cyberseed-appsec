@@ -2,16 +2,13 @@ package edu.syr.cyberseed.sage.server.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name = "user")
 public class User {
+
     @Id
     @Column(name = "username")
     private String username;
@@ -24,6 +21,29 @@ public class User {
     
     @Column(name = "Lname")
     private String lname;
+
+    @Column(name = "roles")
+    private String roles;
+
+    @Column(name = "custom_permissions_to_add")
+    private String custom_permissions_to_add;
+
+    @Column(name = "custom_permissions_to_remove")
+    private String custom_permissions_to_remove;
+
+    protected User() {
+
+    }
+
+    public User(String username, String password, String fname, String lname, String roles, String custom_permissions_to_add, String custom_permissions_to_remove) {
+        this.username = username;
+        this.password = password;
+        this.fname = fname;
+        this.lname = lname;
+        this.roles = roles;
+        this.custom_permissions_to_add = custom_permissions_to_add;
+        this.custom_permissions_to_remove = custom_permissions_to_remove;
+    }
 
     public String getUsername() {
         return username;
@@ -40,7 +60,7 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public String getFname() {
         return fname;
     }
@@ -48,6 +68,7 @@ public class User {
     public void setFname(String fname) {
         this.fname = fname;
     }
+
     public String getLname() {
         return lname;
     }
@@ -56,14 +77,28 @@ public class User {
         this.lname = lname;
     }
 
-    protected User() {
-
+    public String getRoles() {
+        return roles;
     }
-    public User(String username, String password, String fname, String lname) {
-        this.username = username;
-        this.password = password;
-        this.fname = fname;
-        this.lname = lname;
+
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
+
+    public String getCustom_permissions_to_add() {
+        return custom_permissions_to_add;
+    }
+
+    public void setCustom_permissions_to_add(String custom_permissions_to_add) {
+        this.custom_permissions_to_add = custom_permissions_to_add;
+    }
+
+    public String getCustom_permissions_to_remove() {
+        return custom_permissions_to_remove;
+    }
+
+    public void setCustom_permissions_to_remove(String custom_permissions_to_remove) {
+        this.custom_permissions_to_remove = custom_permissions_to_remove;
     }
 
 }

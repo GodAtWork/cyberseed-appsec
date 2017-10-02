@@ -1,6 +1,9 @@
 package edu.syr.cyberseed.sage.server.controllers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.syr.cyberseed.sage.server.entities.Patient;
 import edu.syr.cyberseed.sage.server.entities.Record;
@@ -10,6 +13,7 @@ import edu.syr.cyberseed.sage.server.entities.models.PatientUserModel;
 import edu.syr.cyberseed.sage.server.repositories.PatientRepository;
 import edu.syr.cyberseed.sage.server.repositories.RecordRepository;
 import edu.syr.cyberseed.sage.server.repositories.UserRepository;
+import flexjson.JSONSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +41,27 @@ public class RecordController {
      public ResultValue createPatient(@RequestBody @Valid PatientUserModel user) {
         String resultString = "FAILURE";
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        //Create a json list of roles for a user of this type
+        String roles;
+        ArrayList<String> roleList = new ArrayList<String>();
+        roleList.add("ROLE_USER");
+        roleList.add("ROLE_PATIENT");
+        Map<String, Object> rolesJson = new HashMap<String, Object>();
+        rolesJson.put("roles", roleList);
+        JSONSerializer serializer = new JSONSerializer();
+        roles = serializer.include("roles").serialize(rolesJson);
+
+        logger.info("Adding user " +  user.getUsername() + " with roles " + roles);
         try {
             // create the User record
-            userRepository.save(Arrays.asList(new User(user.getUsername(), user.getPassword(),user.getFname(),user.getLname())));
+            userRepository.save(Arrays.asList(new User(user.getUsername(),
+                    user.getPassword(),
+                    user.getFname(),
+                    user.getLname(),
+                    roles,
+                    null,
+                    null)));
             // create the Patient record
             patientRepository.save(Arrays.asList(new Patient(user.getUsername(), user.getDob(),user.getSsn(),user.getAddress())));
             resultString = "SUCCESS";
