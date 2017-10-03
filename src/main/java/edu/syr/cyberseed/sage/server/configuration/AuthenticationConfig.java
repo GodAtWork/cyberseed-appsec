@@ -51,7 +51,7 @@ public class AuthenticationConfig extends WebMvcConfigurerAdapter {
                     .antMatchers("/addDoctorExamRecord").access("hasAnyRole('ROLE_DOCTOR','ROLE_NURSE','ROLE_MEDICAL_ADMIN')")
                     .antMatchers("/addTestResult").access("hasAnyRole('ROLE_DOCTOR','ROLE_NURSE','ROLE_MEDICAL_ADMIN')")
                     .antMatchers("/addDiagnosisRecord").access("hasRole('ROLE_DOCTOR')")
-                    .antMatchers("/addInsuranceClaimRecord").access("hasAnyRole('ROLE_MEDICAL_ADMIN','ROLE_INSURACNE_ADMIN')")
+                    .antMatchers("/addInsuranceClaimRecord").access("hasAnyRole('ROLE_MEDICAL_ADMIN','ROLE_INSURANCE_ADMIN')")
                     .antMatchers("/addRawRecord").access("hasRole('ROLE_USER')")
                     .antMatchers("/createCorrespondenceRecord").access("hasAnyRole('ROLE_DOCTOR','ROLE_PATIENT')")
                     .antMatchers("/addCorrespondenceNote").access("hasAnyRole('ROLE_DOCTOR','ROLE_PATIENT')")
