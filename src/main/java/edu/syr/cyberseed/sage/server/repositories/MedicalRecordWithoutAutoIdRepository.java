@@ -12,5 +12,7 @@ public interface MedicalRecordWithoutAutoIdRepository extends JpaRepository<Medi
     List<MedicalRecordWithoutAutoId> findByOwner(String owner);
     List<MedicalRecordWithoutAutoId> findByPatient(String patient);
     MedicalRecordWithoutAutoId findById(Integer id);
+    List<MedicalRecordWithoutAutoId> findByViewContaining(String view);
+    List<MedicalRecordWithoutAutoId> findByEditContaining(String edit);
 
 }

@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -22,10 +21,10 @@ public class MedicalRecord {
     private String record_type;
     
     @Column(name = "edit")
-    private String edit_permissions;
+    private String edit;
 
     @Column(name = "view")
-    private String view_permissions;
+    private String view;
     
     @Column(name = "owner")
     private String owner;
@@ -52,20 +51,20 @@ public class MedicalRecord {
         this.record_type = record_type;
     }
 
-    public String getEdit_permissions() {
-        return edit_permissions;
+    public String getEdit() {
+        return edit;
     }
 
-    public void setEdit_permissions(String edit_permissions) {
-        this.edit_permissions = edit_permissions;
+    public void setEdit(String edit) {
+        this.edit = edit;
     }
 
-    public String getView_permissions() {
-        return view_permissions;
+    public String getView() {
+        return view;
     }
 
-    public void setView_permissions(String view_permissions) {
-        this.view_permissions = view_permissions;
+    public void setView(String view) {
+        this.view = view;
     }
 
     public String getOwner() {
@@ -96,24 +95,24 @@ public class MedicalRecord {
     }
 
     // Constructor when id is not specified
-    public MedicalRecord(String record_type, Date date, String owner, String patient, String edit_permissions, String view_permissions) {
+    public MedicalRecord(String record_type, Date date, String owner, String patient, String edit, String view) {
         this.record_type = record_type;
         this.date = date;
         this.owner = owner;
         this.patient = patient;
-        this.edit_permissions = edit_permissions;
-        this.view_permissions = view_permissions;
+        this.edit = edit;
+        this.view = view;
     }
 
     // Constructor when id is specified
-    public MedicalRecord(Integer id, String record_type, Date date, String owner, String patient, String edit_permissions, String view_permissions) {
+    public MedicalRecord(Integer id, String record_type, Date date, String owner, String patient, String edit, String view) {
         this.id = id;
         this.record_type = record_type;
         this.date = date;
         this.owner = owner;
         this.patient = patient;
-        this.edit_permissions = edit_permissions;
-        this.view_permissions = view_permissions;
+        this.edit = edit;
+        this.view = view;
     }
 
     @Override

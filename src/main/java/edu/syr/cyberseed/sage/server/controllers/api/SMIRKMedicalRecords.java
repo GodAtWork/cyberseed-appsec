@@ -134,14 +134,21 @@ public class SMIRKMedicalRecords {
         String resultString = "FAILURE";
 
         List<MedicalRecord> recordsAsOwner = medicalRecordRepository.findByOwner(currentUser);
+        logger.info("Found " + recordsAsOwner.size() + " recordsAsOwner");
         List<MedicalRecord> recordsAsPatient = medicalRecordRepository.findByPatient(currentUser);
-        //todo add view list
-        //todo add edit list
-        Set<MedicalRecord> myRecords = new HashSet<MedicalRecord>(recordsAsOwner);
-        myRecords.addAll(recordsAsPatient);
+        logger.info("Found " + recordsAsPatient.size() + " recordsAsPatient");
+        List<MedicalRecord> recordsAsViewer = medicalRecordRepository.findByViewContaining("\"" +currentUser + "\"");
+        logger.info("Found " + recordsAsViewer.size() + " recordsAsViewer");
+        List<MedicalRecord> recordsAsEditor = medicalRecordRepository.findByEditContaining("\"" +currentUser + "\"");
+        logger.info("Found " + recordsAsEditor.size() + " recordsAsEditor");
+        Set<MedicalRecord> myRecordsSet = new HashSet<MedicalRecord>(recordsAsOwner);
+        myRecordsSet.addAll(recordsAsPatient);
+        myRecordsSet.addAll(recordsAsViewer);
+        myRecordsSet.addAll(recordsAsEditor);
+        logger.info("There are " + myRecordsSet.size() + " distinct records that I have access to.");
 
         ArrayList<String> recordSummaryList = new ArrayList<String>();
-        for (MedicalRecord record : myRecords) {
+        for (MedicalRecord record : myRecordsSet) {
             String summary = record.getId() + "," + record.getRecord_type() + "," + record.getDate();
             recordSummaryList.add(summary);
         }
