@@ -24,7 +24,7 @@ public class Record_insurance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "record_id")
+    @Column(name = "id")
     private long id;
 
     @Column(name = "madmin")

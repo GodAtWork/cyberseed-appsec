@@ -67,11 +67,6 @@ public class Patient {
         this.address = address;
     }
 
-    public Patient(String username, String address) {
-        this.username = username;
-        this.address = address;
-    }
-
     @Override
     public String toString() {
         return String.format("Patient[username=%s, ssn='%d', address='%s']", username, ssn, address);

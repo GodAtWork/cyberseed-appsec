@@ -1,8 +1,26 @@
 Usage exmaples for service endpoints
 
-Service: /createPatient
-curl --user sysad:1234567891234567 -X POST -d '{"username":"patient11","password":"1234567891234567","fname":"Mary","lname":"Smith","dob":"1980-09-03T00:00:00.000Z","ssn":"555555555","address":"123 Maple Ln. Syracuse NY 12303"}' -H "Content-Type: application/json" http://localhost:8080/createPatient
+Windows usage example
 curl.exe --user sysad:1234567891234567 -H "Content-Type: application/json" -X POST http://localhost:8080/createPatient -d "{\"username\":\"patient12\",\"password\":\"1234567891234567\",\"fname\":\"Mary\",\"lname\":\"Smith\",\"dob\":\"1980-09-03T00:00:00.000Z\",\"ssn\":\"555555555\",\"address\":\"123 Maple Ln. Syracuse NY 12303\"}\"
+
+
+Integration test sequence
+
+2.
+Service: /createDoctor
+curl --user sysad:1234567891234567 -X POST -d '{"username":"KLibby","password":"1234567891234567","fname":"Kate","lname":"Libby","practiceName":"The Gibson Associates","practiceAddress":"1995 Aburn Road, Chicago, IL 60007","recoveryPhrase":"You are not in my class"}' -H "Content-Type: application/json" http://localhost:8080/createDoctor
+3.
+Service: /createPatient
+curl --user KLibby:1234567891234567 -X POST -d '{"username":"MBishop","password":"1234567891234567","fname":"Martin","lname":"Bishop","dob":"1936-08-18T00:00:00.000Z","ssn":"312124253","address":"145 Redford Drive, Baltimore, MD 21234"}' -H "Content-Type: application/json" http://localhost:8080/createPatient
+4.
+Service: /addDoctorExamRecord
+with id specified (as per integration test)
+curl --user KLibby:1234567891234567 -X POST -d '{"id":"9123245","examDate":"2017-09-03T00:00:00.000Z","patientUsername":"MBishop","doctorUsername":"KLibby","notes":"Looks great for his age"}' -H "Content-Type: application/json" http://localhost:8080/addDoctorExamRecord
+with no id specified
+curl --user KLibby:1234567891234567 -X POST -d '{"examDate":"2017-09-03T00:00:00.000Z","patientUsername":"MBishop","doctorUsername":"KLibby","notes":"Looks great for his age"}' -H "Content-Type: application/json" http://localhost:8080/addDoctorExamRecord
+
+
+
 
 Service: /editPerm
 curl --user sysad:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm

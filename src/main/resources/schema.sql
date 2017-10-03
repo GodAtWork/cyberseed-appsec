@@ -93,7 +93,7 @@ CREATE TABLE `patient` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record`;
 CREATE TABLE `record` (
-  `id` int(255) NOT NULL,
+  `id` int(255) NOT NULL AUTO_INCREMENT,
   `record_type` char(255) NOT NULL,
   `edit` varchar(255) NOT NULL,
   `view` varchar(255) NOT NULL,
@@ -114,12 +114,12 @@ CREATE TABLE `record` (
 DROP TABLE IF EXISTS `record_correspondence`;
 CREATE TABLE `record_correspondence` (
   `doctor` varchar(255) NOT NULL,
-  `record_id` int(255) NOT NULL,
+  `id` int(255) NOT NULL,
   `notes` varchar(50) NOT NULL,
-  KEY `FK_record_correspondence_record` (`record_id`),
+  KEY `FK_record_correspondence_record` (`id`),
   KEY `FK_record_correspondence_doctor` (`doctor`),
   CONSTRAINT `FK_record_correspondence_doctor` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_record_correspondence_record` FOREIGN KEY (`record_id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_record_correspondence_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
@@ -127,13 +127,13 @@ CREATE TABLE `record_correspondence` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record_diagnosis`;
 CREATE TABLE `record_diagnosis` (
-  `record_id` int(255) NOT NULL,
+  `id` int(255) NOT NULL,
   `date` date NOT NULL,
   `doctor` varchar(255) NOT NULL,
   `diagnosis` varchar(255) NOT NULL,
-  KEY `FK_record_diagnosis_record` (`record_id`),
+  KEY `FK_record_diagnosis_record` (`id`),
   KEY `FK_record_diagnosis_user` (`doctor`),
-  CONSTRAINT `FK_record_diagnosis_record` FOREIGN KEY (`record_id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_record_diagnosis_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_record_diagnosis_user` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -142,13 +142,13 @@ CREATE TABLE `record_diagnosis` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record_doctor_exam`;
 CREATE TABLE `record_doctor_exam` (
-  `record_id` int(255) NOT NULL,
+  `id` int(255) NOT NULL,
   `doctor` varchar(255) NOT NULL,
   `date` date NOT NULL,
   `notes` varchar(255) NOT NULL,
-  KEY `FK_record_doctor_exam_record` (`record_id`),
+  KEY `FK_record_doctor_exam_record` (`id`),
   KEY `FK_record_doctor_exam_user` (`doctor`),
-  CONSTRAINT `FK_record_doctor_exam_record` FOREIGN KEY (`record_id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_record_doctor_exam_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_record_doctor_exam_user` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -157,14 +157,14 @@ CREATE TABLE `record_doctor_exam` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record_insurance`;
 CREATE TABLE `record_insurance` (
-  `record_id` int(255) NOT NULL,
+  `id` int(255) NOT NULL,
   `date` date NOT NULL,
   `madmin` varchar(255) NOT NULL,
   `amount` float NOT NULL,
   `status` varchar(255) NOT NULL,
-  KEY `FK_record_insurance_record` (`record_id`),
+  KEY `FK_record_insurance_record` (`id`),
   KEY `FK_record_insurance_user` (`madmin`),
-  CONSTRAINT `FK_record_insurance_record` FOREIGN KEY (`record_id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_record_insurance_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_record_insurance_user` FOREIGN KEY (`madmin`) REFERENCES `medical_admin` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -184,11 +184,11 @@ CREATE TABLE `record_note` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record_raw`;
 CREATE TABLE `record_raw` (
-  `record_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `description` char(255) NOT NULL,
   `file` binary(255) NOT NULL,
-  KEY `FK_record_raw_record` (`record_id`),
-  CONSTRAINT `FK_record_raw_record` FOREIGN KEY (`record_id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `FK_record_raw_record` (`id`),
+  CONSTRAINT `FK_record_raw_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
@@ -196,14 +196,14 @@ CREATE TABLE `record_raw` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record_testresult`;
 CREATE TABLE `record_testresult` (
-  `record_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `date` date NOT NULL,
   `doctor` varchar(255) NOT NULL,
   `lab` varchar(255) NOT NULL,
   `notes` varchar(255) NOT NULL,
-  KEY `FK_record_testresult_record` (`record_id`),
+  KEY `FK_record_testresult_record` (`id`),
   KEY `FK_record_testresult_user` (`doctor`),
-  CONSTRAINT `FK_record_testresult_record` FOREIGN KEY (`record_id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_record_testresult_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_record_testresult_user` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

@@ -10,32 +10,23 @@ import java.util.Date;
 
 @XmlRootElement
 @Data
-public class PatientUserModel {
+public class DoctorExamRecordModel {
 
-    @NotNull
-    @Size(min = 1, max = 255)
-    private String username;
-
-    @NotNull
-    @Size(min = 15, max = 255)
-    private String password;
-
-    @NotNull
-    @Size(min = 1, max = 255)
-    private String fname;
-
-    @NotNull
-    @Size(min = 1, max = 255)
-    private String lname;
-
-    @NotNull
-    private Date dob;
-
-    @NotNull
     @Range(min = 1l, max=999999999)
-    private Integer ssn;
+    private Integer id;
+
+    @NotNull
+    private Date examDate;
 
     @NotNull
     @Size(min = 1, max = 255)
-    private String address;
+    private String patientUsername;
+
+    @NotNull
+    @Size(min = 1, max = 255)
+    private String doctorUsername;
+
+    @NotNull
+    @Size(min = 1, max = 255)
+    private String notes;
 }

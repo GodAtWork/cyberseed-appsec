@@ -1,46 +1,39 @@
 package edu.syr.cyberseed.sage.server.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "record")
-public class Record {
+public class MedicalRecordWithoutAutoId {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "record_id")
-    private long id;
+    @Column(name = "id")
+    private Integer id;
 
     @Column(name = "record_type")
     private String record_type;
-    
+
     @Column(name = "edit")
     private String edit_permissions;
 
     @Column(name = "view")
     private String view_permissions;
-    
+
     @Column(name = "owner")
     private String owner;
-    
+
     @Column(name = "patient")
     private String patient;
-    
+
      @Column(name = "date")
     private Date date;
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -92,17 +85,23 @@ public class Record {
         this.date = date;
     }
 
-    protected Record() {
+    protected MedicalRecordWithoutAutoId() {
     }
 
-    public Record(String owner, String patient) {
+    // Constructor when id is specified
+    public MedicalRecordWithoutAutoId(Integer id, String record_type, Date date, String owner, String patient, String edit_permissions, String view_permissions) {
+        this.id = id;
+        this.record_type = record_type;
+        this.date = date;
         this.owner = owner;
         this.patient = patient;
+        this.edit_permissions = edit_permissions;
+        this.view_permissions = view_permissions;
     }
 
     @Override
     public String toString() {
-        return String.format("Record[recordID=%d, patient='%s', owner='%s']", id, patient, owner);
+        return String.format("MedicalRecord[recordID=%d, patient='%s', owner='%s']", id, patient, owner);
     }
 
 }

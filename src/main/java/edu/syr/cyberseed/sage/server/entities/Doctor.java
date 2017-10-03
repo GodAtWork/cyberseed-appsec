@@ -14,7 +14,7 @@ public class Doctor {
 //    private static final long serialVersionUID = -3009157732241241604L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "username")
     private String username;
 
     @Column(name = "Pname")
@@ -58,9 +58,11 @@ public class Doctor {
     protected Doctor() {
     }
 
-    public Doctor(String username, String pname) {
+    public Doctor(String username, String pname, String paddress, String rphrase) {
         this.username = username;
         this.pname = pname;
+        this.paddress = paddress;
+        this.rphrase = rphrase;
     }
 
     @Override
