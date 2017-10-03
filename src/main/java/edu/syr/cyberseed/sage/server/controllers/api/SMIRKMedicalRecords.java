@@ -122,4 +122,32 @@ public class SMIRKMedicalRecords {
         logger.info("Authenticated user " + currentUser + " completed execution of service /addDoctorExamRecord");
         return result;
     }
+
+    // 5.15 /listRecords
+    @Secured({"ROLE_USER"})
+    @ApiOperation(value = "List all records the accessing user has permissions on.",
+            notes = "When listRecords service is successfully exercised the server application SHALL return a list containing the Record ID, Record Type, and Record Date for all records that the accessing user is listed as either owner, on edit permissions list or view permissions list. The listRecords service SHALL be accessible to all users. \n")
+    @RequestMapping(value = "/listRecords", method = RequestMethod.GET)
+    public ArrayList<String> listRecords() {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /listRecords");
+        String resultString = "FAILURE";
+
+        List<MedicalRecord> recordsAsOwner = medicalRecordRepository.findByOwner(currentUser);
+        List<MedicalRecord> recordsAsPatient = medicalRecordRepository.findByPatient(currentUser);
+        //todo add view list
+        //todo add edit list
+        Set<MedicalRecord> myRecords = new HashSet<MedicalRecord>(recordsAsOwner);
+        myRecords.addAll(recordsAsPatient);
+
+        ArrayList<String> recordSummaryList = new ArrayList<String>();
+        for (MedicalRecord record : myRecords) {
+            String summary = record.getId() + "," + record.getRecord_type() + "," + record.getDate();
+            recordSummaryList.add(summary);
+        }
+
+        logger.info("Authenticated user " + currentUser + " completed execution of service /listRecords");
+        return recordSummaryList;
+    }
+
 }

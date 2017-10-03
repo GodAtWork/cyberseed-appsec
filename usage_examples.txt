@@ -18,7 +18,9 @@ with id specified (as per integration test)
 curl --user KLibby:1234567891234567 -X POST -d '{"id":"9123245","examDate":"2017-09-03T00:00:00.000Z","patientUsername":"MBishop","doctorUsername":"KLibby","notes":"Looks great for his age"}' -H "Content-Type: application/json" http://localhost:8080/addDoctorExamRecord
 with no id specified
 curl --user KLibby:1234567891234567 -X POST -d '{"examDate":"2017-09-03T00:00:00.000Z","patientUsername":"MBishop","doctorUsername":"KLibby","notes":"Looks great for his age"}' -H "Content-Type: application/json" http://localhost:8080/addDoctorExamRecord
-
+5.
+Service /listRecords
+curl --user MBishop:1234567891234567 -X GET http://localhost:8080/listRecords
 
 
 

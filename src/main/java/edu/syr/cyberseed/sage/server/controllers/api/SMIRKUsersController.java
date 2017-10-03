@@ -144,6 +144,9 @@ public class SMIRKUsersController {
     }
 
     @Secured({"ROLE_ASSIGN_PERMISSIONS"})
+    @ApiOperation(value = "Change the permissions of a user profile",
+            notes = "When editPerm is successfully exercised, the result SHALL be a change to the permissions field of an existing user profile in the database.  The editPerm service SHALL only be accessible to a user with Assign Permissions permission. \n")
+
     @RequestMapping(value = "/editPerm", method = RequestMethod.POST)
     public ResultValue editPerm(@RequestBody @Valid CustomPermissionsModel permissionsLists) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();

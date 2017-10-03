@@ -118,7 +118,11 @@ public class MedicalRecord {
 
     @Override
     public String toString() {
-        return String.format("MedicalRecord[recordID=%d, patient='%s', owner='%s']", id, patient, owner);
+        return "MedicalRecord{" +
+                "id=" + id +
+                ", record_type='" + record_type + '\'' +
+                ", date=" + date +
+                '}';
     }
 
 }
