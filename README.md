@@ -1,5 +1,5 @@
-###CyberSeed 2017 Application Security Competition
-###Secure Medical Information Repository Kit (SMIRK) System Requirements Specification 
+### CyberSeed 2017 Application Security Competition
+### Secure Medical Information Repository Kit (SMIRK) System Requirements Specification 
 
 ### Database
 
