@@ -3,9 +3,7 @@ package edu.syr.cyberseed.sage.server.controllers.api;
 import java.util.*;
 
 import edu.syr.cyberseed.sage.server.entities.*;
-import edu.syr.cyberseed.sage.server.entities.models.CustomPermissionsModel;
-import edu.syr.cyberseed.sage.server.entities.models.DoctorUserModel;
-import edu.syr.cyberseed.sage.server.entities.models.PatientUserModel;
+import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
 import flexjson.JSONSerializer;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +32,8 @@ public class SMIRKUsersController {
     PatientRepository patientRepository;
     @Autowired
     DoctorRepository doctorRepository;
+    @Autowired
+    NurseRepository nurseRepository;
     @Autowired
     PermissionsRepository permissionListRepository;
 
@@ -142,6 +142,114 @@ public class SMIRKUsersController {
         logger.info("Authenticated user " + currentUser + " completed execution of service /createDoctor");
         return result;
     }
+    /*
+    //creating nurse
+    // 5.3 /CreateNurse
+    @Secured({"ROLE_ADD_NURSE"})
+    @ApiOperation(value = "Add a nurse user profile to the system.",
+            notes = "When createNurse service is successfully exercised, the result SHALL be a new Nurse User Profile with default permissions and data for all fields in the Nurse User Profile type with valid non-null values added to the database.  The createNurse service SHALL only be accessible to a user with Add Nurse permission.")
+    @RequestMapping(value = "/createNurse", method = RequestMethod.POST)
+    public ResultValue createNurse(@RequestBody @Valid NurseUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /createNurse");
+        String resultString = "FAILURE";
+
+
+        User possibleExistingUser = userRepository.findByUsername(submittedData.getUsername());
+        if ((possibleExistingUser == null) || (StringUtils.isEmpty(possibleExistingUser.getUsername()))) {
+            submittedData.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+
+            //Create a json list of roles for a user of this type
+            String roles;
+            ArrayList<String> roleList = new ArrayList<String>();
+            roleList.add("ROLE_USER");
+            roleList.add("ROLE_NURSE");
+            Map<String, Object> rolesJson = new HashMap<String, Object>();
+            rolesJson.put("roles", roleList);
+            JSONSerializer serializer = new JSONSerializer();
+            roles = serializer.include("roles").serialize(rolesJson);
+
+            logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
+            try {
+                // create the User record
+                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
+                        submittedData.getPassword(),
+                        submittedData.getFname(),
+                        submittedData.getLname(),
+                        roles,
+                        null,
+                        null)));
+
+                // create the Nurse record
+                nurseRepository.save(new Nurse(submittedData.getUsername(), submittedData.getPracticeName(), submittedData.getPracticeAddress(), submittedData.getAssociatedDoctors()));
+
+                resultString = "SUCCESS";
+                logger.info("Created Nurse user " + submittedData.getUsername());
+            } catch (Exception e) {
+                logger.error("Failure creating Nurse user " + submittedData.getUsername());
+                e.printStackTrace();
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /createNurse");
+        return result;
+    }
+
+    //ending create nurse
+*/
+    //creating SysAdmins
+    // 5.3 /CreateSysAdmin
+    @Secured({"ROLE_ADD_SYSTEM_ADMIN"})
+    @ApiOperation(value = "Add a system admin user profile to the system.",
+            notes = "When createSysAdmin service is successfully exercised, the result SHALL be a new system admin User Profile with default permissions and data for all fields in the system admin User Profile type with valid non-null values added to the database.  The createSysAdmin service SHALL only be accessible to a user with Add System Admin permission.")
+    @RequestMapping(value = "/createSysAdmin", method = RequestMethod.POST)
+    public ResultValue createSysAdmin(@RequestBody @Valid SystemAdminModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /createSysAdmin");
+        String resultString = "FAILURE";
+
+
+        User possibleExistingUser = userRepository.findByUsername(submittedData.getUsername());
+        if ((possibleExistingUser == null) || (StringUtils.isEmpty(possibleExistingUser.getUsername()))) {
+            submittedData.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+
+            //Create a json list of roles for a user of this type
+            String roles;
+            ArrayList<String> roleList = new ArrayList<String>();
+            roleList.add("ROLE_USER");
+            roleList.add("ROLE_SYSTEM_ADMIN");
+            Map<String, Object> rolesJson = new HashMap<String, Object>();
+            rolesJson.put("roles", roleList);
+            JSONSerializer serializer = new JSONSerializer();
+            roles = serializer.include("roles").serialize(rolesJson);
+
+            logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
+            try {
+                // create the User record
+                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
+                        submittedData.getPassword(),
+                        submittedData.getFname(),
+                        submittedData.getLname(),
+                        roles,
+                        null,
+                        null)));
+
+                resultString = "SUCCESS";
+                logger.info("Created System Admin user " + submittedData.getUsername());
+            } catch (Exception e) {
+                logger.error("Failure creating System Admin user " + submittedData.getUsername());
+                e.printStackTrace();
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /createSysAdmin");
+        return result;
+    }
+
+    //ending create nurse
+
 
     @Secured({"ROLE_ASSIGN_PERMISSIONS"})
     @ApiOperation(value = "Change the permissions of a user profile",

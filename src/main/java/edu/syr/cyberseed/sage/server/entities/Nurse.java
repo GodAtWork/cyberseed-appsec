@@ -23,8 +23,8 @@ public class Nurse {
     @Column(name = "Paddress")
     private String paddress;
 
-    @Column(name = "Doctor")
-    private String doctor;
+    @Column(name = "Adoctor")
+    private String adoctor;
 
     //private Set<User> username;
 
@@ -42,10 +42,10 @@ public class Nurse {
     public String getPaddress() { return paddress; }
     public void setPaddress(String paddress) {this.paddress = paddress;}
 
-    public String getDoctor() {
-        return doctor;
+    public String getAdoctor() {
+        return adoctor;
     }
-    public void setDoctor(String doctor) {this.doctor = doctor;}
+    public void setAdoctor(String adoctor) {this.adoctor = adoctor;}
 
     //@ManyToMany(mappedBy = "usernames")
     //public Set<User> getUsername() {
@@ -59,13 +59,15 @@ public class Nurse {
     protected Nurse() {
     }
 
-    public Nurse(String username, String pname) {
+    public Nurse(String username, String pname, String paddress, String adoctor) {
         this.username = username;
         this.pname = pname;
+        this.paddress= paddress;
+        this.adoctor=adoctor;
     }
 
     @Override
     public String toString() {
-        return String.format("Nurse[username=%s, pname='%s', paddress='%s', doctor='%s']", username, pname, paddress, doctor);
+        return String.format("Nurse[username=%s, pname='%s', paddress='%s', adoctor='%s']", username, pname, paddress, adoctor);
     }
 }
