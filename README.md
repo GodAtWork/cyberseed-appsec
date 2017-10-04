@@ -13,8 +13,8 @@
 - [x] /createDoctor	
 - [x] /createNurse	
 - [x] /createSysAdmin	
-- [ ] /createMedAdmin	
-- [ ] /createInsAdmin	
+- [x] /createMedAdmin	
+- [x] /createInsAdmin	
 - [x] /editPerm	
 - [x] /addDoctorExamRecord	
 - [ ] /addTestResultRecord	
