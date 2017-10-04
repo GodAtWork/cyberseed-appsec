@@ -327,13 +327,15 @@ public class SMIRKUsersController {
     public Doctor viewRecoveryPhrase(@PathVariable String submittedUsername) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("Authenticated user " + currentUser + " is starting execution of service /viewRecoveryPhrase");
-        String resultString = "FAILURE";
 
         Doctor resultRecord = null;
         Doctor record = doctorRepository.findByUsername(submittedUsername);
         if ((record != null) && (record.getUsername().equals(submittedUsername))) {
             logger.info("Retrieved doctor record for " + submittedUsername);
             resultRecord = record;
+        }
+        else {
+            logger.warn("Did not find doctor record for " + submittedUsername);
         }
 
         logger.info("Authenticated user " + currentUser + " completed execution of service /viewRecoveryPhrase");

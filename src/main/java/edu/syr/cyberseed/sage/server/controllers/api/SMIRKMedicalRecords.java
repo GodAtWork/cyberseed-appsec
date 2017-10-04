@@ -135,7 +135,6 @@ public class SMIRKMedicalRecords {
     public ArrayList<String> listRecords() {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("Authenticated user " + currentUser + " is starting execution of service /listRecords");
-        String resultString = "FAILURE";
 
         List<MedicalRecord> recordsAsOwner = medicalRecordRepository.findByOwner(currentUser);
         logger.info("Found " + recordsAsOwner.size() + " recordsAsOwner");
@@ -171,7 +170,6 @@ public class SMIRKMedicalRecords {
         boolean currentUserisDoctor = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DOCTOR"));
         logger.info("Authenticated user " + currentUser + " is starting execution of service /viewRecord");
         logger.info("Authenticated user " + currentUser + " is a doctor? answer: " + currentUserisDoctor);
-        String resultString = "FAILURE";
         MedicalRecord resultRecord = null;
         MedicalRecord record = medicalRecordRepository.findById(submittedId);
         String owner = record.getOwner();
