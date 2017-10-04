@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.syr.cyberseed.sage.server.entities.*;
+import edu.syr.cyberseed.sage.server.entities.models.DiagnosisRecordModel;
 import edu.syr.cyberseed.sage.server.entities.models.DoctorExamRecordModel;
 import edu.syr.cyberseed.sage.server.repositories.*;
 import io.swagger.annotations.ApiOperation;
@@ -38,6 +39,8 @@ public class SMIRKMedicalRecords {
     PermissionsRepository permissionListRepository;
     @Autowired
     DoctorExamRecordRepository doctorExamRecordRepository;
+    @Autowired
+    DiagnosisRecordRepository diagnosisRecordRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(SMIRKMedicalRecords.class);
 
@@ -87,6 +90,7 @@ public class SMIRKMedicalRecords {
                             submittedData.getExamDate(),
                             submittedData.getNotes()));
                     logger.info("Created  DoctorExamRecord with id " + savedDoctorExamRecord.getId());
+                    resultString = "SUCCESS";
                 }
 
             }
@@ -124,6 +128,93 @@ public class SMIRKMedicalRecords {
         ResultValue result = new ResultValue();
         result.setResult(resultString);
         logger.info("Authenticated user " + currentUser + " completed execution of service /addDoctorExamRecord");
+        return result;
+    }
+
+    // 5.8 /addDiagnosisRecord
+    @Secured({"ROLE_DOCTOR"})
+    @ApiOperation(value = "Add a Diagnosis Record to the database.",
+            notes = "When addDiagnosisRecord is successfully exercised, the result SHALL be a new Diagnosis Record with valid non-null values added to the database. The addDiagnosisRecord service SHALL only be accessible to users with the Doctor role.")
+    @RequestMapping(value = "/addDiagnosisRecord", method = RequestMethod.POST)
+    public ResultValue addDiagnosisRecord(@RequestBody @Valid DiagnosisRecordModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /addDiagnosisRecord");
+        String resultString = "FAILURE";
+
+        Doctor possibleExistingDoctor = doctorRepository.findByUsername(submittedData.getDoctorUsername());
+        Boolean doctorExists = (possibleExistingDoctor != null) ? true : false;
+        Patient possibleExistingPatient = patientRepository.findByUsername(submittedData.getPatientUsername());
+        Boolean patientExists = (possibleExistingPatient != null) ? true : false;
+
+        if (doctorExists && patientExists) {
+
+            // was a record id specified?
+            logger.info("Submitted record id is " + submittedData.getId());
+            if (submittedData.getId() != null) {
+                MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
+                DiagnosisRecord possibleExistingDiagnosisRecord = diagnosisRecordRepository.findById(submittedData.getId());
+                Boolean recordExists = (possibleExistingRecord != null) ? true : false;
+                Boolean diagnosisRecordExists = (possibleExistingDiagnosisRecord != null) ? true : false;
+
+                if (recordExists || diagnosisRecordExists) {
+                    logger.error("Cannot create diagnosis record due to recordExists=" + recordExists + " and diagnosisRecordExists=" + diagnosisRecordExists
+                            + ". You cannot create *new* records with a specific id if records already exist with that id.");
+                }
+                else {
+                    logger.info("Creating records with id " + submittedData.getId());
+                    MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
+                            "Diagnosis Record",
+                            new Date(),
+                            currentUser,
+                            submittedData.getPatientUsername(),
+                            "{\"users\":[\"" + currentUser + "\"]}",
+                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
+                    logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                    // create the Diagnosis record
+                    DiagnosisRecord savedDiagnosisRecord = diagnosisRecordRepository.save(new DiagnosisRecord(submittedData.getId(),
+                            submittedData.getDoctorUsername(),
+                            submittedData.getDiagnosisDate(),
+                            submittedData.getDiagnosis()));
+                    logger.info("Created  DiagnosisRecord with id " + savedDiagnosisRecord.getId());
+                    resultString = "SUCCESS";
+                }
+
+            }
+            else {
+                try {
+                    // create the record
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
+                            new Date(),
+                            currentUser,
+                            submittedData.getPatientUsername(),
+                            "{\"users\":[\"" +currentUser + "\"]}",
+                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
+                    logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                    // create the Diagnosis record
+                    // Use id auto assigned by db to MedicalRecord for examRecord
+                    DiagnosisRecord savedDiagnosisRecord = diagnosisRecordRepository.save(new DiagnosisRecord(savedMedicalRecord.getId(),
+                            submittedData.getDoctorUsername(),
+                            submittedData.getDiagnosisDate(),
+                            submittedData.getDiagnosis()));
+                    logger.info("Created  DiagnosisRecord with id " + savedDiagnosisRecord.getId());
+
+
+                    resultString = "SUCCESS";
+                    logger.info("Created diagnosis record for doctor " + submittedData.getDoctorUsername());
+                } catch (Exception e) {
+                    logger.error("Failure creating diagnosis record for doctor " + submittedData.getDoctorUsername());
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            logger.error("Cannot create diagnosis record due to doctorExists=" + doctorExists + " and patientExists=" +patientExists + ". Both need to exist.");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /addDiagnosisRecord");
         return result;
     }
 

@@ -29,6 +29,15 @@ curl --user MBishop:1234567891234567 -X GET http://localhost:8080/viewRecord/912
 7.
 Service /viewRecoveryPhrase
 curl --user DMurphy:1234567891234567 -X GET http://localhost:8080/viewRecoveryPhrase/KLibby
+8.
+Service /addDiagnosisRecord
+with id specified (as per integration test)
+curl --user KLibby:1234567891234567 -X POST -d '{"id":"832942","diagnosisDate":"2017-09-07T00:00:00.000Z","patientUsername":"MBishop","doctorUsername":"KLibby","diagnosis":"Positive for The Sting"}' -H "Content-Type: application/json" http://localhost:8080/addDiagnosisRecord
+with no id specified
+curl --user KLibby:1234567891234567 -X POST -d '{diagnosisDate":"2017-09-07T00:00:00.000Z","patientUsername":"MBishop","doctorUsername":"KLibby","diagnosis":"Positive for The Sting"}' -H "Content-Type: application/json" http://localhost:8080/addDiagnosisRecord
+9.
+curl --user KLibby:1234567891234567 -X GET http://localhost:8080/viewRecord/832942
+curl --user MBishop:1234567891234567 -X GET http://localhost:8080/viewRecord/832942
 
 Service: /editPerm
 curl --user DMurphy:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm
