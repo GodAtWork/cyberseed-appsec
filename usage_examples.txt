@@ -6,7 +6,7 @@ curl.exe --user sysad:1234567891234567 -H "Content-Type: application/json" -X PO
 
 Integration test sequence
 
-1. create admint (only exists in integration client)
+1. create admin (only exists in integration client)
 
 2.
 Service: /createDoctor
@@ -46,7 +46,9 @@ curl --user MBishop:1234567891234567 -X GET http://localhost:8080/viewRecord/832
 Service /editPatient
 curl --user DMurphy:1234567891234567 -X POST -d '{"username":"MBishop","dob":"1978-09-01T00:00:00.000Z"}' -H "Content-Type: application/json" http://localhost:8080/editPatient
 
-
+-not listed in integration test
+Service /editDoctor
+curl --user DMurphy:1234567891234567 -X POST -d '{"username":"KLibby","practiceName":"The Gibson Associates LLC"}' -H "Content-Type: application/json" http://localhost:8080/editDoctor
 
 Service: /editPerm
 curl --user DMurphy:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm

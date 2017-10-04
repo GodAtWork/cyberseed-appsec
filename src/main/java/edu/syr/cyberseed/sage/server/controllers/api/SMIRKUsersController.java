@@ -322,7 +322,7 @@ public class SMIRKUsersController {
     // 5.18 /editPatient
     @Secured({"ROLE_EDIT_PATIENT"})
     @ApiOperation(value = "Edit existing patient user profile in the system.",
-            notes = "The editPatient service SHALL provide the capability to changing any of the fields in a patient user profile except the Permissions and Roles list. When editPatient service is successfully exercised, the result SHALL be one or more changed value(s) in a patient user profile fields.  The editPatient service SHALL only update a patient user profile if the calling user has Edit Patient permissions.\n")
+            notes = "The editPatient service SHALL provide the capability to changing any of the fields in a patient user profile except the Permissions and Roles list. When editPatient service is successfully exercised, the result SHALL be one or more changed value(s) in a patient user profile fields.  The editPatient service SHALL only update a patient user profile if the calling user has Edit Patient permissions.")
     @RequestMapping(value = "/editPatient", method = RequestMethod.POST)
     public ResultValue editPatient(@RequestBody @Valid EditPatientUserModel submittedData) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -371,6 +371,61 @@ public class SMIRKUsersController {
         ResultValue result = new ResultValue();
         result.setResult(resultString);
         logger.info("Authenticated user " + currentUser + " completed execution of service /editPatient");
+        return result;
+    }
+
+    // 5.19 /editDoctor
+    @Secured({"ROLE_EDIT_DOCTOR"})
+    @ApiOperation(value = "Edit existing doctor user profile in the system.",
+            notes = "The editDoctor service SHALL provide the capability to changing any of the fields in a doctor user profile except the Permissions and Roles list.  When editDoctor service is successfully exercised, the result SHALL be one or more changed value(s) in a doctor user profile fields.  The editDoctor service SHALL only update a doctor user profile if the calling user has Edit Doctor permissions.")
+    @RequestMapping(value = "/editDoctor", method = RequestMethod.POST)
+    public ResultValue editDoctor(@RequestBody @Valid EditDoctorUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editDoctor");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Doctor doctor = doctorRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+        Boolean doctorExists = ((doctor != null) && (StringUtils.isNotEmpty(doctor.getUsername()))) ? true : false;
+
+        if (userExists && doctorExists) {
+
+            // set values for user record
+            if (submittedData.getFname() != null) {
+                user.setFname(submittedData.getFname());
+            }
+            if (submittedData.getLname() != null) {
+                user.setLname(submittedData.getLname());
+            }
+            if (submittedData.getPassword() != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+            }
+
+            // set values for doctor record
+            if (submittedData.getPracticeAddress() != null) {
+                doctor.setPaddress(submittedData.getPracticeAddress());
+            }
+            if (submittedData.getPracticeName() != null ) {
+                doctor.setPname(submittedData.getPracticeName());
+            }
+            if (submittedData.getRecoveryPhrase() != null) {
+                doctor.setRphrase(submittedData.getRecoveryPhrase());
+            }
+
+            User savedUser = userRepository.save(user);
+            Doctor savedDoctor = doctorRepository.save(doctor);
+
+            if ((savedUser != null) && (savedDoctor != null)) {
+                resultString = "SUCCESS";
+                logger.info(currentUser + " completed editing doctor " + submittedData.getUsername());
+            }
+        }
+        else {
+            logger.warn(currentUser + " tried to edit doctor " + submittedData.getUsername() + " but there is not a complete doctor record to edit");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editDoctor");
         return result;
     }
 
