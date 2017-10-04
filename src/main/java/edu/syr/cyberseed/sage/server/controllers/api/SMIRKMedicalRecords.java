@@ -1,5 +1,10 @@
 package edu.syr.cyberseed.sage.server.controllers.api;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.syr.cyberseed.sage.server.entities.*;
 import edu.syr.cyberseed.sage.server.entities.models.DoctorExamRecordModel;
 import edu.syr.cyberseed.sage.server.repositories.*;
@@ -8,13 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -74,7 +78,7 @@ public class SMIRKMedicalRecords {
                             currentUser,
                             submittedData.getPatientUsername(),
                             "{\"users\":[\"" + currentUser + "\"]}",
-                            "{\"users\":[\"" + currentUser + "\"]}"));
+                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
@@ -94,7 +98,7 @@ public class SMIRKMedicalRecords {
                             currentUser,
                             submittedData.getPatientUsername(),
                             "{\"users\":[\"" +currentUser + "\"]}",
-                            "{\"users\":[\"" +currentUser + "\"]}"));
+                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
@@ -155,6 +159,64 @@ public class SMIRKMedicalRecords {
 
         logger.info("Authenticated user " + currentUser + " completed execution of service /listRecords");
         return recordSummaryList;
+    }
+
+    // 5.16 /viewRecord
+    @Secured({"ROLE_USER"})
+    @ApiOperation(value = "View a record.",
+            notes = "When viewRecord service is successfully exercised the server application SHALL return the record corresponding to the record ID requested in the service call. The viewRecord service SHALL only return the record if the accessing user is listed on the records view permissions list or is the record owner. The viewRecord service SHALL only return a Diagnosis Record if the accessing user has Doctor Role.")
+    @RequestMapping(value = "/viewRecord/{submittedId}", method = RequestMethod.GET)
+    public MedicalRecord viewRecord(@PathVariable Integer submittedId) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean currentUserisDoctor = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DOCTOR"));
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /viewRecord");
+        logger.info("Authenticated user " + currentUser + " is a doctor? answer: " + currentUserisDoctor);
+        String resultString = "FAILURE";
+        MedicalRecord resultRecord = null;
+        MedicalRecord record = medicalRecordRepository.findById(submittedId);
+        String owner = record.getOwner();
+        logger.info("record " + submittedId + " owner is " + owner);
+        // parse the list of viewers stored in the db as a json list to a java arraylist
+        String viewersJsonList = record.getView();
+        List<String> viewerList = new ArrayList<String>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> mapObject = mapper.readValue(viewersJsonList,
+                    new TypeReference<Map<String, Object>>() {
+                    });
+            viewerList = (List<String>) mapObject.get("users");
+        }
+        catch (JsonGenerationException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (String viewer : viewerList) {
+            logger.info("record " + submittedId + " viewers include " + viewer);
+        }
+
+        // check if current is owner or in view list
+        if (currentUser.equals(owner) || viewerList.contains(currentUser)) {
+            if (record.getRecord_type().equals("Diagnosis Record") && !currentUserisDoctor) {
+                logger.warn(currentUser + " is not a doctor so cannot view a Diagnosis Record.");
+            }
+            else {
+                // user is owner or in view list
+                // if the records is a diag record the user is a doctor
+                // set the record object we will return to the retrieved record
+                resultRecord = record;
+            }
+        }
+        else {
+            logger.warn(currentUser + " is neither the owner nor has view permissions to this record");
+        }
+
+        logger.info("Authenticated user " + currentUser + " completed execution of service /viewRecord");
+        return resultRecord;
     }
 
 }

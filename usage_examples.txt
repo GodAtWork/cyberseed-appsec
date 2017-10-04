@@ -21,8 +21,9 @@ curl --user KLibby:1234567891234567 -X POST -d '{"examDate":"2017-09-03T00:00:00
 5.
 Service /listRecords
 curl --user MBishop:1234567891234567 -X GET http://localhost:8080/listRecords
-
-
+6.
+Service /viewRecord
+curl --user MBishop:1234567891234567 -X GET http://localhost:8080/viewRecord/9123245
 
 Service: /editPerm
 curl --user sysad:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm
