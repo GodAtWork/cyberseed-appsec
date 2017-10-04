@@ -28,9 +28,9 @@
 - [ ] /editRecordPerm	
 - [x] /editPatient	
 - [x] /editDoctor	
-- [ ] /editNurse	
-- [ ] /editSysAdmin	
-- [ ] /editMedAdmin	
+- [x] /editNurse	
+- [x] /editSysAdmin	
+- [x] /editMedAdmin	
 - [ ] /editInsAdmin	
 - [ ] /viewPatientProfile
 - [x] /viewRecoveryPhrase
