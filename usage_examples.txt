@@ -1,8 +1,11 @@
 Usage exmaples for service endpoints
 
 Windows usage example
+/createPatient
 curl.exe --user sysad:1234567891234567 -H "Content-Type: application/json" -X POST http://localhost:8080/createPatient -d "{\"username\":\"patient12\",\"password\":\"1234567891234567\",\"fname\":\"Mary\",\"lname\":\"Smith\",\"dob\":\"1980-09-03T00:00:00.000Z\",\"ssn\":\"555555555\",\"address\":\"123 Maple Ln. Syracuse NY 12303\"}\"
 
+/editNurse
+curl.exe --user doctor:1234567891234567 -H "Content-Type: application/json" -X POST http://localhost:8080/editNurse -d "{\"username\":\"nurse\",\"password\":\"1234567891234567\",\"fname\":\"Mary\",\"lname\":\"Smith\",\"pname\":\"hawkinski\",\"paddress\":\"123 Maple Ln. Syracuse NY 12303\",\"adoctors\":\"doctor\"}\"
 
 Integration test sequence
 

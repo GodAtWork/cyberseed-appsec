@@ -373,8 +373,6 @@ public class SMIRKUsersController {
 
     //ending create Medical Admin
 
-
-
     //5.7
     @Secured({"ROLE_ASSIGN_PERMISSIONS"})
     @ApiOperation(value = "Change the permissions of a user profile",
@@ -546,6 +544,169 @@ public class SMIRKUsersController {
         logger.info("Authenticated user " + currentUser + " completed execution of service /editDoctor");
         return result;
     }
+
+//starting edit nurse
+    // 5.20 /editNurse
+    @Secured({"ROLE_EDIT_NURSE"})
+    @ApiOperation(value = "Edit existing nurse user profile in the system.",
+            notes = "The editNurse service SHALL provide the capability to changing any of the fields in a nurse user profile except the Permissions and Roles list.  When editNurse service is successfully exercised, the result SHALL be one or more changed value(s) in a Nurse user profile fields.  The editNurse service SHALL only update a nurse user profile if the calling user has Edit nurse permissions.")
+    @RequestMapping(value = "/editNurse", method = RequestMethod.POST)
+    public ResultValue editNurse(@RequestBody @Valid EditNurseUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editNurse");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Nurse nurse = nurseRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+        Boolean nurseExists = ((nurse != null) && (StringUtils.isNotEmpty(nurse.getUsername()))) ? true : false;
+
+        if (userExists && nurseExists) {
+
+            // set values for user record
+            if (submittedData.getFname() != null) {
+                user.setFname(submittedData.getFname());
+            }
+            if (submittedData.getLname() != null) {
+                user.setLname(submittedData.getLname());
+            }
+            if (submittedData.getPassword() != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+            }
+
+            // set values for doctor record
+            if (submittedData.getPaddress() != null) {
+                nurse.setPaddress(submittedData.getPaddress());
+            }
+            if (submittedData.getPname() != null ) {
+                nurse.setPname(submittedData.getPname());
+            }
+            if (submittedData.getAdoctors() != null) {
+                nurse.setAdoctors(submittedData.getAdoctors());
+            }
+
+            User savedUser = userRepository.save(user);
+            Nurse savedNurse = nurseRepository.save(nurse);
+
+            if ((savedUser != null) && (savedNurse != null)) {
+                resultString = "SUCCESS";
+                logger.info(currentUser + " completed editing nurse " + submittedData.getUsername());
+            }
+        }
+        else {
+            logger.warn(currentUser + " tried to edit nurse " + submittedData.getUsername() + " but there is not a complete nurse record to edit");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editNurse");
+        return result;
+    }
+    //ending edit nurse
+
+
+    //starting edit sysAdmin
+    // 5.21 /editsysAdmin
+    @Secured({"ROLE_EDIT_SYSTEM_ADMIN"})
+    @ApiOperation(value = "Edit existing system admin user profile in the system.",
+            notes = "The editSysAdmin service SHALL provide the capability to changing any of the fields in a system admin user profile except the Permissions and Roles list.  When editSysAdmin service is successfully exercised, the result SHALL be one or more changed value(s) in a System Admin user profile fields.  The editSysAdmin service SHALL only update a system admin user profile if the calling user has Edit system admin permissions.")
+    @RequestMapping(value = "/editSysAdmin", method = RequestMethod.POST)
+    public ResultValue editSysAdmin(@RequestBody @Valid EditSysAdminUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editSysAdmin");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+
+        if (userExists) {
+
+            // set values for user record
+            if (submittedData.getFname() != null) {
+                user.setFname(submittedData.getFname());
+            }
+            if (submittedData.getLname() != null) {
+                user.setLname(submittedData.getLname());
+            }
+            if (submittedData.getPassword() != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+            }
+
+            User savedUser = userRepository.save(user);
+
+            if ((savedUser != null)) {
+                resultString = "SUCCESS";
+                logger.info(currentUser + " completed editing system admin " + submittedData.getUsername());
+            }
+        }
+        else {
+            logger.warn(currentUser + " tried to edit system admin " + submittedData.getUsername() + " but there is not a complete system admin record to edit");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editSysAdmin");
+        return result;
+    }
+    //ending edit sysAdmin
+
+
+    //starting edit MedAdmin
+    // 5.22 /editMedAdmin
+    @Secured({"ROLE_EDIT_MEDICAL_ADMIN"})
+    @ApiOperation(value = "Edit existing medical admin user profile in the system.",
+            notes = "The editMedAdmin service SHALL provide the capability to changing any of the fields in a medical admin user profile except the Permissions and Roles list.  When editMedAdmin service is successfully exercised, the result SHALL be one or more changed value(s) in a Medical Admin user profile fields.  The editMedAdmin service SHALL only update a medical admin user profile if the calling user has Edit medical admin permissions.")
+    @RequestMapping(value = "/editMedAdmin", method = RequestMethod.POST)
+    public ResultValue editMedAdmin(@RequestBody @Valid EditMedAdminUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editMedAdmin");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Medical_admin medical_admin = medicalAdminRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+        Boolean medical_adminExists = ((medical_admin != null) && (StringUtils.isNotEmpty(medical_admin.getUsername()))) ? true : false;
+
+        if (userExists && medical_adminExists) {
+
+            // set values for user record
+            if (submittedData.getFname() != null) {
+                user.setFname(submittedData.getFname());
+            }
+            if (submittedData.getLname() != null) {
+                user.setLname(submittedData.getLname());
+            }
+            if (submittedData.getPassword() != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+            }
+
+            // set values for doctor record
+            if (submittedData.getPaddress() != null) {
+                medical_admin.setPaddress(submittedData.getPaddress());
+            }
+            if (submittedData.getPname() != null ) {
+                medical_admin.setPname(submittedData.getPname());
+            }
+            if (submittedData.getAdoctor() != null) {
+                medical_admin.setAdoctor(submittedData.getAdoctor());
+            }
+            if (submittedData.getAnurse() != null) {
+                medical_admin.setAnurse(submittedData.getAnurse());
+            }
+
+            User savedUser = userRepository.save(user);
+            Medical_admin savedMedicalAdmin = medicalAdminRepository.save(medical_admin);
+
+            if ((savedUser != null) && (savedMedicalAdmin != null)) {
+                resultString = "SUCCESS";
+                logger.info(currentUser + " completed editing medical admin " + submittedData.getUsername());
+            }
+        }
+        else {
+            logger.warn(currentUser + " tried to edit medical admin " + submittedData.getUsername() + " but there is not a complete medical admin record to edit");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editMedAdmin");
+        return result;
+    }
+    //ending edit MedAdmin
+
 
     // 5.25 /viewRecoveryPhrase
     @Secured({"ROLE_SYSTEM_ADMIN"})

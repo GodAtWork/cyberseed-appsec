@@ -45,10 +45,10 @@ public class Medical_admin {
     public String getPaddress() { return paddress; }
     public void setPaddress(String paddress) {this.paddress = paddress;}
 
-    public String getDoctor() {
+    public String getAdoctor() {
         return adoctor;
     }
-    public void setDoctor(String doctor) {this.adoctor = doctor;}
+    public void setAdoctor(String doctor) {this.adoctor = doctor;}
 
     public String getAnurse() {return anurse;}
     public void setAnurse(String anurse) {this.anurse = anurse;}
