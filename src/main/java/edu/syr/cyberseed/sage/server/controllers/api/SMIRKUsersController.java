@@ -1,7 +1,13 @@
 package edu.syr.cyberseed.sage.server.controllers.api;
 
+import java.io.IOException;
 import java.util.*;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.syr.cyberseed.sage.server.entities.*;
 import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
@@ -13,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -312,5 +319,26 @@ public class SMIRKUsersController {
         return result;
     }
 
+    // 5.25 /viewRecoveryPhrase
+    @Secured({"ROLE_SYSTEM_ADMIN"})
+    @ApiOperation(value = "View a doctor’s recovery phrase.",
+            notes = "When viewRecoveryPhrase service is successfully exercised the server application SHALL return the doctor user profile corresponding to the doctor username requested in the service call. The viewRecoveryPhrase service SHALL only return the profile if the accessing has System Administrator Role. The viewRecoveryPhrase service SHALL only return doctor user profiles types.  \n")
+    @RequestMapping(value = "/viewRecoveryPhrase/{submittedUsername}", method = RequestMethod.GET)
+    public Doctor viewRecoveryPhrase(@PathVariable String submittedUsername) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /viewRecoveryPhrase");
+        String resultString = "FAILURE";
+
+        Doctor resultRecord = null;
+        Doctor record = doctorRepository.findByUsername(submittedUsername);
+        if ((record != null) && (record.getUsername().equals(submittedUsername))) {
+            logger.info("Retrieved doctor record for " + submittedUsername);
+            resultRecord = record;
+        }
+
+        logger.info("Authenticated user " + currentUser + " completed execution of service /viewRecoveryPhrase");
+        // per spec this returns the doctor record from which the recovery phrase may be parsed
+        return resultRecord;
+    }
 
 }

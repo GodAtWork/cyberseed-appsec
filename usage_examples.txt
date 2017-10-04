@@ -6,9 +6,11 @@ curl.exe --user sysad:1234567891234567 -H "Content-Type: application/json" -X PO
 
 Integration test sequence
 
+1. create admint (only exists in integration client)
+
 2.
 Service: /createDoctor
-curl --user sysad:1234567891234567 -X POST -d '{"username":"KLibby","password":"1234567891234567","fname":"Kate","lname":"Libby","practiceName":"The Gibson Associates","practiceAddress":"1995 Aburn Road, Chicago, IL 60007","recoveryPhrase":"You are not in my class"}' -H "Content-Type: application/json" http://localhost:8080/createDoctor
+curl --user DMurphy:1234567891234567 -X POST -d '{"username":"KLibby","password":"1234567891234567","fname":"Kate","lname":"Libby","practiceName":"The Gibson Associates","practiceAddress":"1995 Aburn Road, Chicago, IL 60007","recoveryPhrase":"You are not in my class"}' -H "Content-Type: application/json" http://localhost:8080/createDoctor
 3.
 Service: /createPatient
 curl --user KLibby:1234567891234567 -X POST -d '{"username":"MBishop","password":"1234567891234567","fname":"Martin","lname":"Bishop","dob":"1936-08-18T00:00:00.000Z","ssn":"312124253","address":"145 Redford Drive, Baltimore, MD 21234"}' -H "Content-Type: application/json" http://localhost:8080/createPatient
@@ -24,6 +26,9 @@ curl --user MBishop:1234567891234567 -X GET http://localhost:8080/listRecords
 6.
 Service /viewRecord
 curl --user MBishop:1234567891234567 -X GET http://localhost:8080/viewRecord/9123245
+7.
+Service /viewRecoveryPhrase
+curl --user DMurphy:1234567891234567 -X GET http://localhost:8080/viewRecoveryPhrase/KLibby
 
 Service: /editPerm
-curl --user sysad:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm
+curl --user DMurphy:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm
