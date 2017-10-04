@@ -39,5 +39,14 @@ curl --user KLibby:1234567891234567 -X POST -d '{diagnosisDate":"2017-09-07T00:0
 curl --user KLibby:1234567891234567 -X GET http://localhost:8080/viewRecord/832942
 curl --user MBishop:1234567891234567 -X GET http://localhost:8080/viewRecord/832942
 
+
+
+
+27.
+Service /editPatient
+curl --user DMurphy:1234567891234567 -X POST -d '{"username":"MBishop","dob":"1978-09-01T00:00:00.000Z"}' -H "Content-Type: application/json" http://localhost:8080/editPatient
+
+
+
 Service: /editPerm
 curl --user DMurphy:1234567891234567 -X POST -d '{"username":"patient11","customadds":["ROLE_ADD_PATIENT","ROLE_EDIT_PATIENT"],"customremoves":["ROLE_ADD_DOCTOR","ROLE_EDIT_DOCTOR"]}' -H "Content-Type: application/json" http://localhost:8080/editPerm

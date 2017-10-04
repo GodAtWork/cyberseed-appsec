@@ -257,7 +257,7 @@ public class SMIRKUsersController {
 
     //ending create nurse
 
-
+    //5.7
     @Secured({"ROLE_ASSIGN_PERMISSIONS"})
     @ApiOperation(value = "Change the permissions of a user profile",
             notes = "When editPerm is successfully exercised, the result SHALL be a change to the permissions field of an existing user profile in the database.  The editPerm service SHALL only be accessible to a user with Assign Permissions permission. \n")
@@ -316,6 +316,61 @@ public class SMIRKUsersController {
         ResultValue result = new ResultValue();
         result.setResult(resultString);
         logger.info("Authenticated user " + currentUser + " completed execution of service /editPerm");
+        return result;
+    }
+
+    // 5.18 /editPatient
+    @Secured({"ROLE_EDIT_PATIENT"})
+    @ApiOperation(value = "Edit existing patient user profile in the system.",
+            notes = "The editPatient service SHALL provide the capability to changing any of the fields in a patient user profile except the Permissions and Roles list. When editPatient service is successfully exercised, the result SHALL be one or more changed value(s) in a patient user profile fields.  The editPatient service SHALL only update a patient user profile if the calling user has Edit Patient permissions.\n")
+    @RequestMapping(value = "/editPatient", method = RequestMethod.POST)
+    public ResultValue editPatient(@RequestBody @Valid EditPatientUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editPatient");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Patient patient = patientRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+        Boolean patientExists = ((patient != null) && (StringUtils.isNotEmpty(patient.getUsername()))) ? true : false;
+
+        if (userExists && patientExists) {
+
+            // set values for user record
+            if (submittedData.getFname() != null) {
+                user.setFname(submittedData.getFname());
+            }
+            if (submittedData.getLname() != null) {
+                user.setLname(submittedData.getLname());
+            }
+            if (submittedData.getPassword() != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+            }
+
+            // set values for patient record
+            if (submittedData.getAddress() != null) {
+                patient.setAddress(submittedData.getAddress());
+            }
+            if (submittedData.getDob() != null ) {
+                patient.setDob(submittedData.getDob());
+            }
+            if (submittedData.getSsn() != null) {
+                patient.setSsn(submittedData.getSsn());
+            }
+
+            User savedUser = userRepository.save(user);
+            Patient savedPatient = patientRepository.save(patient);
+
+            if ((savedUser != null) && (savedPatient != null)) {
+                resultString = "SUCCESS";
+                logger.info(currentUser + " completed editing patient " + submittedData.getUsername());
+            }
+        }
+        else {
+            logger.warn(currentUser + " tried to edit patient " + submittedData.getUsername() + " but there is not a complete patient record to edit");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editPatient");
         return result;
     }
 
