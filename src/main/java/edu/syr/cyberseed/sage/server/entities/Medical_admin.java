@@ -14,19 +14,19 @@ public class Medical_admin {
 //    private static final long serialVersionUID = -3009157732241241604L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "Pname")
+    @Column(name = "pname")
     private String pname;
 
-    @Column(name = "Paddress")
+    @Column(name = "paddress")
     private String paddress;
 
-    @Column(name = "Doctor")
-    private String doctor;
+    @Column(name = "adoctor")
+    private String adoctor;
 
-    @Column(name = "Anurse")
+    @Column(name = "anurse")
     private String anurse;
 
     //private Set<User> username;
@@ -46,9 +46,9 @@ public class Medical_admin {
     public void setPaddress(String paddress) {this.paddress = paddress;}
 
     public String getDoctor() {
-        return doctor;
+        return adoctor;
     }
-    public void setDoctor(String doctor) {this.doctor = doctor;}
+    public void setDoctor(String doctor) {this.adoctor = doctor;}
 
     public String getAnurse() {return anurse;}
     public void setAnurse(String anurse) {this.anurse = anurse;}
@@ -65,13 +65,16 @@ public class Medical_admin {
     protected Medical_admin() {
     }
 
-    public Medical_admin(String username, String pname) {
+    public Medical_admin(String username, String pname, String paddress, String adoctor, String anurse) {
         this.username = username;
         this.pname = pname;
+        this.paddress=paddress;
+        this.adoctor=adoctor;
+        this.anurse=anurse;
     }
 
     @Override
     public String toString() {
-        return String.format("Medical_admin[username=%s, pname='%s', paddress='%s', doctor='%s', anurse='%s']", username, pname, paddress, doctor, anurse);
+        return String.format("Medical_admin[username=%s, pname='%s', paddress='%s', doctor='%s', anurse='%s']", username, pname, paddress, adoctor, anurse);
     }
 }

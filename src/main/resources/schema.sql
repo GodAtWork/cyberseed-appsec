@@ -71,8 +71,7 @@ CREATE TABLE `nurse` (
   `adoctor` varchar(255) NOT NULL,
   PRIMARY KEY (`username`),
   KEY `FK_nurse_user_2` (`adoctor`),
-  CONSTRAINT `FK_nurse_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_nurse_user_2` FOREIGN KEY (`adoctor`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_nurse_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------

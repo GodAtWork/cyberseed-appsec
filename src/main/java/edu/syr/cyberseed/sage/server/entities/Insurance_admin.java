@@ -14,13 +14,13 @@ public class Insurance_admin {
 //    private static final long serialVersionUID = -3009157732241241604L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "Cname")
+    @Column(name = "cname")
     private String cname;
 
-    @Column(name = "Caddress")
+    @Column(name = "caddress")
     private String caddress;
 
     //private Set<User> username;
@@ -50,9 +50,10 @@ public class Insurance_admin {
     protected Insurance_admin() {
     }
 
-    public Insurance_admin(String username, String pname) {
+    public Insurance_admin(String username, String cname, String caddress) {
         this.username = username;
         this.cname = cname;
+        this.caddress=caddress;
     }
 
     @Override

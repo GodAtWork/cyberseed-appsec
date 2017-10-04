@@ -10,7 +10,7 @@ import java.util.Date;
 
 @XmlRootElement
 @Data
-public class NurseUserModel {
+public class MedicalAdminModel {
 
     @NotNull
     @Size(min = 1, max = 255)
@@ -38,5 +38,9 @@ public class NurseUserModel {
 
     @NotNull
     @Size(min = 1, max = 255)
-    private String adoctors;
+    private String adoctor;
+
+    @NotNull
+    @Size(min = 1, max = 255)
+    private String anurse;
 }

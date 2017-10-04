@@ -14,16 +14,16 @@ public class Nurse {
 //    private static final long serialVersionUID = -3009157732241241604L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "Pname")
+    @Column(name = "pname")
     private String pname;
 
-    @Column(name = "Paddress")
+    @Column(name = "paddress")
     private String paddress;
 
-    @Column(name = "Adoctor")
+    @Column(name = "adoctor")
     private String adoctor;
 
     //private Set<User> username;

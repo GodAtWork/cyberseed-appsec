@@ -41,6 +41,11 @@ public class SMIRKUsersController {
     DoctorRepository doctorRepository;
     @Autowired
     NurseRepository nurseRepository;
+
+    @Autowired
+    MedicalAdminRepository medicalAdminRepository;
+    @Autowired
+    InsuranceAdminRepository insAdminRepository;
     @Autowired
     PermissionsRepository permissionListRepository;
 
@@ -149,63 +154,7 @@ public class SMIRKUsersController {
         logger.info("Authenticated user " + currentUser + " completed execution of service /createDoctor");
         return result;
     }
-    /*
-    //creating nurse
-    // 5.3 /CreateNurse
-    @Secured({"ROLE_ADD_NURSE"})
-    @ApiOperation(value = "Add a nurse user profile to the system.",
-            notes = "When createNurse service is successfully exercised, the result SHALL be a new Nurse User Profile with default permissions and data for all fields in the Nurse User Profile type with valid non-null values added to the database.  The createNurse service SHALL only be accessible to a user with Add Nurse permission.")
-    @RequestMapping(value = "/createNurse", method = RequestMethod.POST)
-    public ResultValue createNurse(@RequestBody @Valid NurseUserModel submittedData) {
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        logger.info("Authenticated user " + currentUser + " is starting execution of service /createNurse");
-        String resultString = "FAILURE";
 
-
-        User possibleExistingUser = userRepository.findByUsername(submittedData.getUsername());
-        if ((possibleExistingUser == null) || (StringUtils.isEmpty(possibleExistingUser.getUsername()))) {
-            submittedData.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
-
-            //Create a json list of roles for a user of this type
-            String roles;
-            ArrayList<String> roleList = new ArrayList<String>();
-            roleList.add("ROLE_USER");
-            roleList.add("ROLE_NURSE");
-            Map<String, Object> rolesJson = new HashMap<String, Object>();
-            rolesJson.put("roles", roleList);
-            JSONSerializer serializer = new JSONSerializer();
-            roles = serializer.include("roles").serialize(rolesJson);
-
-            logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
-            try {
-                // create the User record
-                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
-                        submittedData.getPassword(),
-                        submittedData.getFname(),
-                        submittedData.getLname(),
-                        roles,
-                        null,
-                        null)));
-
-                // create the Nurse record
-                nurseRepository.save(new Nurse(submittedData.getUsername(), submittedData.getPracticeName(), submittedData.getPracticeAddress(), submittedData.getAssociatedDoctors()));
-
-                resultString = "SUCCESS";
-                logger.info("Created Nurse user " + submittedData.getUsername());
-            } catch (Exception e) {
-                logger.error("Failure creating Nurse user " + submittedData.getUsername());
-                e.printStackTrace();
-            }
-        }
-        ResultValue result = new ResultValue();
-        result.setResult(resultString);
-        logger.info("Authenticated user " + currentUser + " completed execution of service /createNurse");
-        return result;
-    }
-
-    //ending create nurse
-*/
-    //creating SysAdmins
     // 5.3 /CreateSysAdmin
     @Secured({"ROLE_ADD_SYSTEM_ADMIN"})
     @ApiOperation(value = "Add a system admin user profile to the system.",
@@ -255,7 +204,176 @@ public class SMIRKUsersController {
         return result;
     }
 
+   //creating ins admin
+
+    // 5.4 /CreateInsAdmin
+    @Secured({"ROLE_ADD_INSURANCE_ADMIN"})
+    @ApiOperation(value = "Add a insurance admin user profile to the system.",
+            notes = "When createInsAdmin service is successfully exercised, the result SHALL be a new insurance admin User Profile with default permissions and data for all fields in the insurance admin User Profile type with valid non-null values added to the database.  The createInsAdmin service SHALL only be accessible to a user with Add insurance admin permission.")
+    @RequestMapping(value = "/createInsAdmin", method = RequestMethod.POST)
+    public ResultValue createInsAdmin(@RequestBody @Valid InsuranceAdminModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /createInsAdmin");
+        String resultString = "FAILURE";
+
+
+        User possibleExistingUser = userRepository.findByUsername(submittedData.getUsername());
+        if ((possibleExistingUser == null) || (StringUtils.isEmpty(possibleExistingUser.getUsername()))) {
+            submittedData.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+
+            //Create a json list of roles for a user of this type
+            String roles;
+            ArrayList<String> roleList = new ArrayList<String>();
+            roleList.add("ROLE_USER");
+            roleList.add("ROLE_INSURANCE_ADMIN");
+            Map<String, Object> rolesJson = new HashMap<String, Object>();
+            rolesJson.put("roles", roleList);
+            JSONSerializer serializer = new JSONSerializer();
+            roles = serializer.include("roles").serialize(rolesJson);
+
+            logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
+            try {
+                // create the User record
+                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
+                        submittedData.getPassword(),
+                        submittedData.getFname(),
+                        submittedData.getLname(),
+                        roles,
+                        null,
+                        null)));
+
+                // create the InsAdmin record
+                insAdminRepository.save(Arrays.asList(new Insurance_admin(submittedData.getUsername(), submittedData.getCname(), submittedData.getCaddress())));
+
+                resultString = "SUCCESS";
+                logger.info("Created Insurance Admin user " + submittedData.getUsername());
+            } catch (Exception e) {
+                logger.error("Failure creating Inurance Admin user " + submittedData.getUsername());
+                e.printStackTrace();
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /createInsAdmin");
+        return result;
+    }
+
+    //ending create ins admin
+
+    //creating nurse
+
+    // 5.5 /CreateNurse
+    @Secured({"ROLE_ADD_NURSE"})
+    @ApiOperation(value = "Add a nurse user profile to the system.",
+            notes = "When createNurse service is successfully exercised, the result SHALL be a new Nurse User Profile with default permissions and data for all fields in the nurse User Profile type with valid non-null values added to the database.  The createNurse service SHALL only be accessible to a user with Add nurse permission.")
+    @RequestMapping(value = "/createNurse", method = RequestMethod.POST)
+    public ResultValue createNurse(@RequestBody @Valid NurseUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /createNurse");
+        String resultString = "FAILURE";
+
+
+        User possibleExistingUser = userRepository.findByUsername(submittedData.getUsername());
+        if ((possibleExistingUser == null) || (StringUtils.isEmpty(possibleExistingUser.getUsername()))) {
+            submittedData.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+
+            //Create a json list of roles for a user of this type
+            String roles;
+            ArrayList<String> roleList = new ArrayList<String>();
+            roleList.add("ROLE_USER");
+            roleList.add("ROLE_NURSE");
+            Map<String, Object> rolesJson = new HashMap<String, Object>();
+            rolesJson.put("roles", roleList);
+            JSONSerializer serializer = new JSONSerializer();
+            roles = serializer.include("roles").serialize(rolesJson);
+
+            logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
+            try {
+                // create the User record
+                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
+                        submittedData.getPassword(),
+                        submittedData.getFname(),
+                        submittedData.getLname(),
+                        roles,
+                        null,
+                        null)));
+
+                // create the Nurse record
+                nurseRepository.save(Arrays.asList(new Nurse(submittedData.getUsername(), submittedData.getPname(), submittedData.getPaddress(), submittedData.getAdoctors())));
+
+                resultString = "SUCCESS";
+                logger.info("Created Nurse user " + submittedData.getUsername());
+            } catch (Exception e) {
+                logger.error("Failure creating Nurse user " + submittedData.getUsername());
+                e.printStackTrace();
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /createNurse");
+        return result;
+    }
+
     //ending create nurse
+
+
+    //creating Medical Admin
+
+    // 5.6 /CreateMedAdmin
+    @Secured({"ROLE_ADD_MEDICAL_ADMIN"})
+    @ApiOperation(value = "Add a medical admin user profile to the system.",
+            notes = "When createMedAdmin service is successfully exercised, the result SHALL be a new medical admin User Profile with default permissions and data for all fields in the medical admin User Profile type with valid non-null values added to the database.  The medical admin service SHALL only be accessible to a user with Add medical admin permission.")
+    @RequestMapping(value = "/createMedadmin", method = RequestMethod.POST)
+    public ResultValue createMedAdmin(@RequestBody @Valid MedicalAdminModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /createMedAdmin");
+        String resultString = "FAILURE";
+
+
+        User possibleExistingUser = userRepository.findByUsername(submittedData.getUsername());
+        if ((possibleExistingUser == null) || (StringUtils.isEmpty(possibleExistingUser.getUsername()))) {
+            submittedData.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+
+            //Create a json list of roles for a user of this type
+            String roles;
+            ArrayList<String> roleList = new ArrayList<String>();
+            roleList.add("ROLE_USER");
+            roleList.add("ROLE_MEDICAL_ADMIN");
+            Map<String, Object> rolesJson = new HashMap<String, Object>();
+            rolesJson.put("roles", roleList);
+            JSONSerializer serializer = new JSONSerializer();
+            roles = serializer.include("roles").serialize(rolesJson);
+
+            logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
+            try {
+                // create the User record
+                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
+                        submittedData.getPassword(),
+                        submittedData.getFname(),
+                        submittedData.getLname(),
+                        roles,
+                        null,
+                        null)));
+
+                // create the Nurse record
+                medicalAdminRepository.save(Arrays.asList(new Medical_admin(submittedData.getUsername(), submittedData.getPname(), submittedData.getPaddress(), submittedData.getAdoctor(), submittedData.getAnurse())));
+
+                resultString = "SUCCESS";
+                logger.info("Created Medical Admin user " + submittedData.getUsername());
+            } catch (Exception e) {
+                logger.error("Failure creating Medical Admin user " + submittedData.getUsername());
+                e.printStackTrace();
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /createMedAdmin");
+        return result;
+    }
+
+    //ending create Medical Admin
+
+
 
     //5.7
     @Secured({"ROLE_ASSIGN_PERMISSIONS"})
