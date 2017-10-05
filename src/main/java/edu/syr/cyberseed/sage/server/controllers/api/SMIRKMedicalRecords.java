@@ -89,7 +89,7 @@ public class SMIRKMedicalRecords {
                 for (String username : userSuppliedListOfUsersToGrantEdit) {
                     User possibleUser = userRepository.findByUsername(username);
                     if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
-                        editUserList.add(currentUser);
+                        editUserList.add(username);
                     }
                 }
                 editUserListJson.put("users", editUserList);
@@ -107,7 +107,7 @@ public class SMIRKMedicalRecords {
                 for (String username : userSuppliedListOfUsersToGrantView) {
                     User possibleUser = userRepository.findByUsername(username);
                     if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
-                        viewUserList.add(currentUser);
+                        viewUserList.add(username);
                     }
                 }
                 viewUserListJson.put("users", viewUserList);
