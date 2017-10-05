@@ -81,8 +81,8 @@ public class SMIRKMedicalRecords {
             Map<String, Object> viewUserListJson = new HashMap<String, Object>();
 
 
-            String finalEditRoles = "";
-            String finalViewRoles = "";
+            String finalEditPermissions = "";
+            String finalViewPermissions = "";
 
             if (editUsersSubmitted) {
                 List<String> userSuppliedListOfUsersToGrantEdit = submittedData.getEdit();
@@ -94,12 +94,12 @@ public class SMIRKMedicalRecords {
                 }
                 editUserListJson.put("users", editUserList);
                 JSONSerializer serializer = new JSONSerializer();
-                finalEditRoles = serializer.include("users").serialize(editUserListJson);
+                finalEditPermissions = serializer.include("users").serialize(editUserListJson);
             }
             else {
                 editUserListJson.put("users", editUserList);
                 JSONSerializer serializer = new JSONSerializer();
-                finalEditRoles = serializer.include("users").serialize(editUserListJson);
+                finalEditPermissions = serializer.include("users").serialize(editUserListJson);
             }
 
             if (viewUsersSubmitted) {
@@ -112,12 +112,12 @@ public class SMIRKMedicalRecords {
                 }
                 viewUserListJson.put("users", viewUserList);
                 JSONSerializer serializer = new JSONSerializer();
-                finalViewRoles = serializer.include("users").serialize(viewUserListJson);
+                finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
             }
             else {
                 viewUserListJson.put("users", viewUserList);
                 JSONSerializer serializer = new JSONSerializer();
-                finalViewRoles = serializer.include("users").serialize(viewUserListJson);
+                finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
             }
 
             // was a record id specified?
@@ -139,8 +139,8 @@ public class SMIRKMedicalRecords {
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
-                            finalEditRoles,
-                            finalViewRoles));
+                            finalEditPermissions,
+                            finalViewPermissions));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
@@ -159,8 +159,8 @@ public class SMIRKMedicalRecords {
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
-                            finalEditRoles,
-                            finalViewRoles));
+                            finalEditPermissions,
+                            finalViewPermissions));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
