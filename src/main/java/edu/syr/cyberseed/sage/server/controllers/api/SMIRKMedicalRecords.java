@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.syr.cyberseed.sage.server.entities.*;
 import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
+import flexjson.JSONSerializer;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,62 @@ public class SMIRKMedicalRecords {
 
         if (doctorExists && patientExists) {
 
+            //Check if API user specified supplemental users for edit or view permission
+            Boolean editUsersSubmitted = ((submittedData.getEdit() != null) && (submittedData.getEdit().size() > 0)) ? true : false;
+            Boolean viewUsersSubmitted = ((submittedData.getView() != null) && (submittedData.getView().size() > 0)) ? true : false;
+
+            // create a json object of the default edit users
+            ArrayList<String> editUserList = new ArrayList<String>();
+            editUserList.add(currentUser);
+            Map<String, Object> editUserListJson = new HashMap<String, Object>();
+
+
+            // create a json object of the default view users
+            ArrayList<String> viewUserList = new ArrayList<String>();
+            viewUserList.add(currentUser);
+            viewUserList.add(submittedData.getPatientUsername());
+            Map<String, Object> viewUserListJson = new HashMap<String, Object>();
+
+
+            String finalEditRoles = "";
+            String finalViewRoles = "";
+
+            if (editUsersSubmitted) {
+                List<String> userSuppliedListOfUsersToGrantEdit = submittedData.getEdit();
+                for (String username : userSuppliedListOfUsersToGrantEdit) {
+                    User possibleUser = userRepository.findByUsername(username);
+                    if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                        editUserList.add(currentUser);
+                    }
+                }
+                editUserListJson.put("users", editUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalEditRoles = serializer.include("users").serialize(editUserListJson);
+            }
+            else {
+                editUserListJson.put("users", editUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalEditRoles = serializer.include("users").serialize(editUserListJson);
+            }
+
+            if (viewUsersSubmitted) {
+                List<String> userSuppliedListOfUsersToGrantView = submittedData.getView();
+                for (String username : userSuppliedListOfUsersToGrantView) {
+                    User possibleUser = userRepository.findByUsername(username);
+                    if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                        viewUserList.add(currentUser);
+                    }
+                }
+                viewUserListJson.put("users", viewUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalViewRoles = serializer.include("users").serialize(viewUserListJson);
+            }
+            else {
+                viewUserListJson.put("users", viewUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalViewRoles = serializer.include("users").serialize(viewUserListJson);
+            }
+
             // was a record id specified?
             logger.info("Submitted record id is " + submittedData.getId());
             if (submittedData.getId() != null) {
@@ -81,8 +139,8 @@ public class SMIRKMedicalRecords {
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
-                            "{\"users\":[\"" + currentUser + "\"]}",
-                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
+                            finalEditRoles,
+                            finalViewRoles));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
@@ -93,7 +151,6 @@ public class SMIRKMedicalRecords {
                     logger.info("Created  DoctorExamRecord with id " + savedDoctorExamRecord.getId());
                     resultString = "SUCCESS";
                 }
-
             }
             else {
                 try {
@@ -102,8 +159,8 @@ public class SMIRKMedicalRecords {
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
-                            "{\"users\":[\"" +currentUser + "\"]}",
-                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
+                            finalEditRoles,
+                            finalViewRoles));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record

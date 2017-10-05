@@ -3,10 +3,12 @@ package edu.syr.cyberseed.sage.server.entities.models;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
+import java.util.List;
 
 @XmlRootElement
 @Data
@@ -29,4 +31,10 @@ public class DoctorExamRecordModel {
     @NotNull
     @Size(min = 1, max = 255)
     private String notes;
+
+    // optional
+    private List<String> edit;
+
+    //optional
+    private List<String> view;
 }
