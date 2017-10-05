@@ -9,7 +9,9 @@ curl.exe --user doctor:1234567891234567 -H "Content-Type: application/json" -X P
 
 Integration test sequence
 
-1. create admin (only exists in integration client)
+1. create System Admin
+Service: /createSysAdmin
+curl --user sysad:1234567891234567 -X POST -d '{"username":"DMurphy","password":"1234567891234567","fname":"Dade","lname":"Murphy"}' -H "Content-Type: application/json" http://localhost:8080/createSysAdmin
 
 2.
 Service: /createDoctor
