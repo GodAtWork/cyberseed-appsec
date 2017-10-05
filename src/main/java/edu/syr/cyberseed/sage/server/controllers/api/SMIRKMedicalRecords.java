@@ -6,8 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.syr.cyberseed.sage.server.entities.*;
-import edu.syr.cyberseed.sage.server.entities.models.DiagnosisRecordModel;
-import edu.syr.cyberseed.sage.server.entities.models.DoctorExamRecordModel;
+import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -39,6 +38,8 @@ public class SMIRKMedicalRecords {
     PermissionsRepository permissionListRepository;
     @Autowired
     DoctorExamRecordRepository doctorExamRecordRepository;
+    @Autowired
+    TestResultRecordRepository testResultRecordRepository;
     @Autowired
     DiagnosisRecordRepository diagnosisRecordRepository;
 
@@ -131,6 +132,100 @@ public class SMIRKMedicalRecords {
         return result;
     }
 
+
+    //adding test result record
+
+    // 5.8 /addTestResultRecord
+    @Secured({"ROLE_DOCTOR","ROLE_NURSE","ROLE_MEDICAL_ADMIN"})
+    @ApiOperation(value = "Add a Test Result MedicalRecord to the database.",
+            notes = "When addTestResult MedicalRecord is successfully exercised, the result SHALL be a new Test Result MedicalRecord with valid non-null values added to the database.  The addTestResultRecord service SHALL only be accessible to users with the Doctor, Nurse, and Medical Administrator roles.")
+    @RequestMapping(value = "/addTestResultRecord", method = RequestMethod.POST)
+    public ResultValue addTestResultRecord(@RequestBody @Valid TestResultRecordModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /addTestResultRecord");
+        String resultString = "FAILURE";
+
+        Doctor possibleExistingDoctor = doctorRepository.findByUsername(submittedData.getDoctorUsername());
+        Boolean doctorExists = (possibleExistingDoctor != null) ? true : false;
+        Patient possibleExistingPatient = patientRepository.findByUsername(submittedData.getPatientUsername());
+        Boolean patientExists = (possibleExistingPatient != null) ? true : false;
+
+        if (doctorExists && patientExists) {
+
+            // was a record id specified?
+            logger.info("Submitted record id is " + submittedData.getId());
+            if (submittedData.getId() != null) {
+                MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
+                Record_testresult possibleTestResultExamRecord = testResultRecordRepository.findById(submittedData.getId());
+                Boolean recordExists = (possibleExistingRecord != null) ? true : false;
+                Boolean TestResultRecordExists = (possibleTestResultExamRecord != null) ? true : false;
+
+                if (recordExists || TestResultRecordExists) {
+                    logger.error("Cannot create test result record due to recordExists=" + recordExists + " and doctorExamRecordExists=" + TestResultRecordExists
+                            + ". You cannot create *new* records with a specific id if records already exist with that id.");
+                }
+                else {
+                    logger.info("Creating records with id " + submittedData.getId());
+                    MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
+                            "Test Result",
+                            new Date(),
+                            currentUser,
+                            submittedData.getPatientUsername(),
+                            "{\"users\":[\"" + currentUser + "\"]}",
+                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
+                    logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                    // create the Doctor exam record
+                    Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(submittedData.getId(),
+                            submittedData.getDoctorUsername(),
+                            submittedData.getLab(),
+                            submittedData.getNotes(),
+                            submittedData.getTestDate()));
+                    logger.info("Created  TestResultRecord with id " + savedTestResultRecord.getId());
+                    resultString = "SUCCESS";
+                }
+
+            }
+            else {
+                try {
+                    // create the record
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
+                            new Date(),
+                            currentUser,
+                            submittedData.getPatientUsername(),
+                            "{\"users\":[\"" +currentUser + "\"]}",
+                            "{\"users\":[\"" + currentUser + "\",\"" + submittedData.getPatientUsername() + "\"]}"));
+                    logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                    // create the Test Result record
+                    // Use id auto assigned by db to MedicalRecord for testResult
+                   Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(savedMedicalRecord.getId(),
+                            submittedData.getDoctorUsername(),
+                            submittedData.getLab(),
+                            submittedData.getNotes()
+                   , submittedData.getTestDate()));
+                    logger.info("Created  TestResultRecord with id " + savedTestResultRecord.getId());
+
+
+                    resultString = "SUCCESS";
+                    logger.info("Created test result record for doctor " + submittedData.getDoctorUsername());
+                } catch (Exception e) {
+                    logger.error("Failure creating test result record for doctor " + submittedData.getDoctorUsername());
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            logger.error("Cannot create Test Result record due to doctorExists=" + doctorExists + " and patientExists=" +patientExists + ". Both need to exist.");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /addTestResultRecord");
+        return result;
+    }
+
+
+    //ending test result record
     // 5.8 /addDiagnosisRecord
     @Secured({"ROLE_DOCTOR"})
     @ApiOperation(value = "Add a Diagnosis Record to the database.",

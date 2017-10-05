@@ -31,7 +31,7 @@
 - [x] /editNurse	
 - [x] /editSysAdmin	
 - [x] /editMedAdmin	
-- [ ] /editInsAdmin	
+- [x] /editInsAdmin	
 - [ ] /viewPatientProfile
 - [x] /viewRecoveryPhrase
 - [ ] /removeUserProfile

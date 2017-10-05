@@ -708,6 +708,62 @@ public class SMIRKUsersController {
     //ending edit MedAdmin
 
 
+    //starting edit InsAdmin
+    // 5.22 /editInsAdmin
+    @Secured({"ROLE_EDIT_INSURANCE_ADMIN"})
+    @ApiOperation(value = "Edit existing insurance admin user profile in the system.",
+            notes = "The editInsAdmin service SHALL provide the capability to changing any of the fields in a insurance admin user profile except the Permissions and Roles list.  When editInsAdmin service is successfully exercised, the result SHALL be one or more changed value(s) in a Insurance Admin user profile fields.  The editInsAdmin service SHALL only update a insurance admin user profile if the calling user has Edit insurance admin permissions.")
+    @RequestMapping(value = "/editInsAdmin", method = RequestMethod.POST)
+    public ResultValue editInsAdmin(@RequestBody @Valid EditInsAdminUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editInsAdmin");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Insurance_admin insurance_admin = insAdminRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+        Boolean insurance_adminExists = ((insurance_admin != null) && (StringUtils.isNotEmpty(insurance_admin.getUsername()))) ? true : false;
+
+        if (userExists && insurance_adminExists) {
+
+            // set values for user record
+            if (submittedData.getFname() != null) {
+                user.setFname(submittedData.getFname());
+            }
+            if (submittedData.getLname() != null) {
+                user.setLname(submittedData.getLname());
+            }
+            if (submittedData.getPassword() != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(submittedData.getPassword()));
+            }
+
+            // set values for insurance admin record
+            if (submittedData.getCname() != null ) {
+                insurance_admin.setCname(submittedData.getCname());
+            }
+            if (submittedData.getCaddress() != null) {
+                insurance_admin.setCaddress(submittedData.getCaddress());
+            }
+
+
+            User savedUser = userRepository.save(user);
+            Insurance_admin savedInsuranceAdmin = insAdminRepository.save(insurance_admin);
+
+            if ((savedUser != null) && (savedInsuranceAdmin != null)) {
+                resultString = "SUCCESS";
+                logger.info(currentUser + " completed editing insurance admin " + submittedData.getUsername());
+            }
+        }
+        else {
+            logger.warn(currentUser + " tried to edit insurance admin " + submittedData.getUsername() + " but there is not a complete insurance admin record to edit");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editInsAdmin");
+        return result;
+    }
+    //ending edit InsAdmin
+
+
     // 5.25 /viewRecoveryPhrase
     @Secured({"ROLE_SYSTEM_ADMIN"})
     @ApiOperation(value = "View a doctor’s recovery phrase.",

@@ -23,7 +23,6 @@ import java.util.Date;
 public class Record_testresult {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
     
@@ -35,6 +34,9 @@ public class Record_testresult {
       
        @Column(name = "notes")
     private String notes;
+
+    @Column(name = "date")
+    private Date date;
 
     public long getId() {
         return id;
@@ -68,4 +70,12 @@ public class Record_testresult {
         this.notes = notes;
     }
 
+
+    public Record_testresult(Integer id, String doctor, String lab, String notes, Date date) {
+        this.id = id;
+        this.doctor = doctor;
+        this.lab = lab;
+        this.notes = notes;
+        this.date=date;
+    }
 }
