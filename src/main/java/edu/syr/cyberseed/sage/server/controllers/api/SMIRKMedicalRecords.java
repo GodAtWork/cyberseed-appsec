@@ -357,7 +357,7 @@ public class SMIRKMedicalRecords {
             logger.info("Submitted record id is " + submittedData.getId());
             if (submittedData.getId() != null) {
                 MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
-                Record_testresult possibleExistingTestResultRecord = testResultRecordRepository.findById(submittedData.getId());
+                TestResultsRecord possibleExistingTestResultRecord = testResultRecordRepository.findById(submittedData.getId());
                 Boolean recordExists = (possibleExistingRecord != null) ? true : false;
                 Boolean testResultRecordExists = (possibleExistingTestResultRecord != null) ? true : false;
 
@@ -377,7 +377,7 @@ public class SMIRKMedicalRecords {
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
-                    Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(submittedData.getId(),
+                    TestResultsRecord savedTestResultRecord = testResultRecordRepository.save(new TestResultsRecord(submittedData.getId(),
                             submittedData.getDoctorUsername(),
                             submittedData.getLab(),
                             submittedData.getNotes(),
@@ -399,7 +399,7 @@ public class SMIRKMedicalRecords {
 
                     // create the Test Result record
                     // Use id auto assigned by db to MedicalRecord for TestResultRecord
-                    Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(savedMedicalRecord.getId(),
+                    TestResultsRecord savedTestResultRecord = testResultRecordRepository.save(new TestResultsRecord(savedMedicalRecord.getId(),
                             submittedData.getDoctorUsername(),
                             submittedData.getLab(),
                             submittedData.getNotes(),
