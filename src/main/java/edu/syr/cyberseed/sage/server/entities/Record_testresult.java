@@ -24,7 +24,7 @@ public class Record_testresult {
 
     @Id
     @Column(name = "id")
-    private long id;
+    private int id;
     
     @Column(name = "doctor")
     private String doctor;
@@ -42,7 +42,7 @@ public class Record_testresult {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -70,6 +70,8 @@ public class Record_testresult {
         this.notes = notes;
     }
 
+    protected Record_testresult() {
+    }
 
     public Record_testresult(Integer id, String doctor, String lab, String notes, Date date) {
         this.id = id;
