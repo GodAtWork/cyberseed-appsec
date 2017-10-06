@@ -598,4 +598,45 @@ public class SMIRKMedicalRecords {
         return resultRecord;
     }
 
+    //ending view patient profile
+
+//    view patient
+
+    @Secured({"ROLE_INSURANCE_ADMIN","ROLE_MEDICAL_ADMIN"})
+    @ApiOperation(value = "View a patient.",
+            notes = "When viewRecord service is successfully exercised the server application SHALL return the record corresponding to the record ID requested in the service call. The viewRecord service SHALL only return the record if the accessing user is listed on the records view permissions list or is the record owner. The viewRecord service SHALL only return a Diagnosis Record if the accessing user has Doctor Role.")
+    @RequestMapping(value = "/viewPatientProfile/{submittedUsername}", method = RequestMethod.GET)
+    public ArrayList<String> viewPatient(@PathVariable String submittedUsername) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean currentUserisInsuranceAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_INSURANCE_ADMIN"));
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /viewPatient");
+        logger.info("Authenticated user " + currentUser + " is a Insurance Admin? answer: " + currentUserisInsuranceAdmin);
+        boolean currentUserisMedicalAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MEDICAL_ADMIN"));
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /viewPatient");
+        logger.info("Authenticated user " + currentUser + " is a Medical Admin? answer: " + currentUserisMedicalAdmin);
+
+        Patient possibleExistingPatient = patientRepository.findByUsername(submittedUsername);
+        Boolean patientExists = (possibleExistingPatient != null) ? true : false;
+        ArrayList<String> recordList = new ArrayList<String>();
+        if (patientExists){
+            User record = userRepository.findByUsername(submittedUsername);
+            Patient precord = patientRepository.findByUsername(submittedUsername);
+            // parse the list of viewers stored in the db as a json list to a java arraylist
+            logger.info("Authenticated user " + currentUser + " completed execution of service /viewPatient");
+            recordList.add(record.getUsername());
+            recordList.add(record.getFname());
+            recordList.add(record.getLname());
+            recordList.add(record.getRoles());
+            recordList.add(precord.getAddress());
+            recordList.add(precord.getSsn().toString());
+            recordList.add(precord.getDob().toString());
+
+        }else{
+            recordList.add("FAILURE");
+            logger.info("Given user " + submittedUsername + " is not a patient");
+        }
+        return recordList;
+    }
+
+
 }
