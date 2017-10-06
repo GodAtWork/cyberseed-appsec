@@ -213,7 +213,7 @@ public class SMIRKMedicalRecords {
             logger.info("Submitted record id is " + submittedData.getId());
             if (submittedData.getId() != null) {
                 MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
-                Record_testresult possibleTestResultExamRecord = testResultRecordRepository.findById(submittedData.getId());
+                TestResultRecord possibleTestResultExamRecord = testResultRecordRepository.findById(submittedData.getId());
                 Boolean recordExists = (possibleExistingRecord != null) ? true : false;
                 Boolean TestResultRecordExists = (possibleTestResultExamRecord != null) ? true : false;
 
@@ -233,7 +233,7 @@ public class SMIRKMedicalRecords {
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
-                    Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(submittedData.getId(),
+                    TestResultRecord savedTestResultRecord = testResultRecordRepository.save(new TestResultRecord(submittedData.getId(),
                             submittedData.getDoctorUsername(),
                             submittedData.getLab(),
                             submittedData.getNotes(),
@@ -256,7 +256,7 @@ public class SMIRKMedicalRecords {
 
                     // create the Test Result record
                     // Use id auto assigned by db to MedicalRecord for testResult
-                   Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(savedMedicalRecord.getId(),
+                   TestResultRecord savedTestResultRecord = testResultRecordRepository.save(new TestResultRecord(savedMedicalRecord.getId(),
                             submittedData.getDoctorUsername(),
                             submittedData.getLab(),
                             submittedData.getNotes()
