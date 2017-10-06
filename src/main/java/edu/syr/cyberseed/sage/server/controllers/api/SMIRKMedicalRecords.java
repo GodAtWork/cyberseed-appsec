@@ -445,14 +445,14 @@ public class SMIRKMedicalRecords {
 
         List<MedicalRecord> recordsAsOwner = medicalRecordRepository.findByOwner(currentUser);
         logger.info("Found " + recordsAsOwner.size() + " recordsAsOwner");
-        List<MedicalRecord> recordsAsPatient = medicalRecordRepository.findByPatient(currentUser);
-        logger.info("Found " + recordsAsPatient.size() + " recordsAsPatient");
+        //List<MedicalRecord> recordsAsPatient = medicalRecordRepository.findByPatient(currentUser);
+        //logger.info("Found " + recordsAsPatient.size() + " recordsAsPatient");
         List<MedicalRecord> recordsAsViewer = medicalRecordRepository.findByViewContaining("\"" +currentUser + "\"");
         logger.info("Found " + recordsAsViewer.size() + " recordsAsViewer");
         List<MedicalRecord> recordsAsEditor = medicalRecordRepository.findByEditContaining("\"" +currentUser + "\"");
         logger.info("Found " + recordsAsEditor.size() + " recordsAsEditor");
         Set<MedicalRecord> myRecordsSet = new HashSet<MedicalRecord>(recordsAsOwner);
-        myRecordsSet.addAll(recordsAsPatient);
+        //myRecordsSet.addAll(recordsAsPatient);
         myRecordsSet.addAll(recordsAsViewer);
         myRecordsSet.addAll(recordsAsEditor);
         logger.info("There are " + myRecordsSet.size() + " distinct records that I have access to.");
@@ -475,6 +475,10 @@ public class SMIRKMedicalRecords {
     public SuperSetOfAllMedicalRecordTypes viewRecord(@PathVariable Integer submittedId) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean currentUserisDoctor = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DOCTOR"));
+        boolean currentUserisInsuranceAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_INSURANCE_ADMIN"));
+        boolean currentUserisMedicalAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MEDICAL_ADMIN"));
+        boolean currentUserisPatient = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_PATIENT"));
+        boolean currentUserisNurse = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_NURSE"));
         logger.info("Authenticated user " + currentUser + " is starting execution of service /viewRecord");
         logger.info("Authenticated user " + currentUser + " is a doctor? answer: " + currentUserisDoctor);
         SuperSetOfAllMedicalRecordTypes resultRecord = new SuperSetOfAllMedicalRecordTypes();
@@ -508,14 +512,26 @@ public class SMIRKMedicalRecords {
             logger.info("record " + submittedId + " viewers include " + viewer);
         }
 
-        // check if current is owner or in view list
+        // check if currentuser is the owner or is in the view list
         if (currentUser.equals(owner) || listOfUsersThatHaveViewPermissionsToThisRecord.contains(currentUser)) {
-            if (record.getRecord_type().equals("Diagnosis Record") && !currentUserisDoctor) {
+            // check if the currentuser has the correct role to access this record type
+            if (record.getRecord_type().equals("Diagnosis") && !currentUserisDoctor) {
                 logger.warn(currentUser + " is not a doctor so cannot view a Diagnosis Record.");
             }
+            else if (record.getRecord_type().equals("Insurance Claim") && !(currentUserisInsuranceAdmin || currentUserisMedicalAdmin)) {
+                logger.warn(currentUser + " is not a medical admin or insurance admin so cannot view a Insurance Claim Record.");
+            }
+            else if (record.getRecord_type().equals("Patient Doctor Correspondence") && !(currentUserisDoctor || currentUserisPatient)) {
+                logger.warn(currentUser + " is not a doctor or patient so cannot view a Patient Doctor Correspondence Record.");
+            }
+            else if (record.getRecord_type().equals("Doctor Exam") && !(currentUserisDoctor || currentUserisNurse || currentUserisMedicalAdmin)) {
+                logger.warn(currentUser + " is not a doctor, nurse, or medical admin so cannot view a Doctor Exam Record.");
+            }
+            else if (record.getRecord_type().equals("Test Result") && !(currentUserisDoctor || currentUserisNurse || currentUserisMedicalAdmin)) {
+                logger.warn(currentUser + " is not a doctor, nurse, or medical admin so cannot view a Test Result Record.");
+            }
             else {
-                // user is owner or in view list
-                // if the records is a diag record the user is a doctor
+                // user is owner or in view list and has the correct role for this record
 
                 // It looks like this user can view this record, now lets determine the record type
                 // and populate the SuperSetOfAllMedicalRecordTypes we are returning with the data
