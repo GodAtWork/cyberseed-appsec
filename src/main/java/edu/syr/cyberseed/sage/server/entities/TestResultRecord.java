@@ -5,6 +5,8 @@
  */
 package edu.syr.cyberseed.sage.server.entities;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +22,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "record_testresult")
-public class TestResultsRecord {
+@Data
+public class TestResultRecord {
 
     @Id
     @Column(name = "id")
@@ -38,42 +41,10 @@ public class TestResultsRecord {
     @Column(name = "date")
     private Date date;
 
-    public long getId() {
-        return id;
+    protected TestResultRecord() {
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(String doctor) {
-        this.doctor = doctor;
-    }
-
-    public String getLab() {
-        return lab;
-    }
-
-    public void setLab(String lab) {
-        this.lab = lab;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    protected TestResultsRecord() {
-    }
-
-    public TestResultsRecord(Integer id, String doctor, String lab, String notes, Date date) {
+    public TestResultRecord(Integer id, String doctor, String lab, String notes, Date date) {
         this.id = id;
         this.doctor = doctor;
         this.lab = lab;

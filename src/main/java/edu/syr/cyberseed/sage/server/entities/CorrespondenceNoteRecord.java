@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "record_note")
-public class CorrespondenceNote {
+public class CorrespondenceNoteRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

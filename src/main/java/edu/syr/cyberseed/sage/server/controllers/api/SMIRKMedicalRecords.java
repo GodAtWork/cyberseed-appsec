@@ -44,6 +44,12 @@ public class SMIRKMedicalRecords {
     TestResultRecordRepository testResultRecordRepository;
     @Autowired
     DiagnosisRecordRepository diagnosisRecordRepository;
+    @Autowired
+    InsuranceClaimRecordRepository insuranceClaimRecordRepository;
+    @Autowired
+    CorrespondenceRecordRepository correspondenceRecordRepository;
+    @Autowired
+    RawRecordRepository rawRecordRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(SMIRKMedicalRecords.class);
 
@@ -357,7 +363,7 @@ public class SMIRKMedicalRecords {
             logger.info("Submitted record id is " + submittedData.getId());
             if (submittedData.getId() != null) {
                 MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
-                Record_testresult possibleExistingTestResultRecord = testResultRecordRepository.findById(submittedData.getId());
+                TestResultRecord possibleExistingTestResultRecord = testResultRecordRepository.findById(submittedData.getId());
                 Boolean recordExists = (possibleExistingRecord != null) ? true : false;
                 Boolean testResultRecordExists = (possibleExistingTestResultRecord != null) ? true : false;
 
@@ -377,7 +383,7 @@ public class SMIRKMedicalRecords {
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
                     // create the Doctor exam record
-                    Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(submittedData.getId(),
+                    TestResultRecord savedTestResultRecord = testResultRecordRepository.save(new TestResultRecord(submittedData.getId(),
                             submittedData.getDoctorUsername(),
                             submittedData.getLab(),
                             submittedData.getNotes(),
@@ -399,7 +405,7 @@ public class SMIRKMedicalRecords {
 
                     // create the Test Result record
                     // Use id auto assigned by db to MedicalRecord for TestResultRecord
-                    Record_testresult savedTestResultRecord = testResultRecordRepository.save(new Record_testresult(savedMedicalRecord.getId(),
+                    TestResultRecord savedTestResultRecord = testResultRecordRepository.save(new TestResultRecord(savedMedicalRecord.getId(),
                             submittedData.getDoctorUsername(),
                             submittedData.getLab(),
                             submittedData.getNotes(),
@@ -464,24 +470,28 @@ public class SMIRKMedicalRecords {
     @ApiOperation(value = "View a record.",
             notes = "When viewRecord service is successfully exercised the server application SHALL return the record corresponding to the record ID requested in the service call. The viewRecord service SHALL only return the record if the accessing user is listed on the records view permissions list or is the record owner. The viewRecord service SHALL only return a Diagnosis Record if the accessing user has Doctor Role.")
     @RequestMapping(value = "/viewRecord/{submittedId}", method = RequestMethod.GET)
-    public MedicalRecord viewRecord(@PathVariable Integer submittedId) {
+    public SuperSetOfAllMedicalRecordTypes viewRecord(@PathVariable Integer submittedId) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean currentUserisDoctor = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DOCTOR"));
         logger.info("Authenticated user " + currentUser + " is starting execution of service /viewRecord");
         logger.info("Authenticated user " + currentUser + " is a doctor? answer: " + currentUserisDoctor);
-        MedicalRecord resultRecord = null;
+        SuperSetOfAllMedicalRecordTypes resultRecord = new SuperSetOfAllMedicalRecordTypes();
+
+        // first find the base MedicalRecord
         MedicalRecord record = medicalRecordRepository.findById(submittedId);
         String owner = record.getOwner();
-        logger.info("record " + submittedId + " owner is " + owner);
+        logger.info("Owner of MedicalRecord " + submittedId + " is " + owner);
+
+        // Determine the listOfUsersThatHaveViewPermissionsToThisRecord
         // parse the list of viewers stored in the db as a json list to a java arraylist
         String viewersJsonList = record.getView();
-        List<String> viewerList = new ArrayList<String>();
+        List<String> listOfUsersThatHaveViewPermissionsToThisRecord = new ArrayList<String>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> mapObject = mapper.readValue(viewersJsonList,
                     new TypeReference<Map<String, Object>>() {
                     });
-            viewerList = (List<String>) mapObject.get("users");
+            listOfUsersThatHaveViewPermissionsToThisRecord = (List<String>) mapObject.get("users");
         }
         catch (JsonGenerationException e) {
             e.printStackTrace();
@@ -492,20 +502,88 @@ public class SMIRKMedicalRecords {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for (String viewer : viewerList) {
+        for (String viewer : listOfUsersThatHaveViewPermissionsToThisRecord) {
             logger.info("record " + submittedId + " viewers include " + viewer);
         }
 
         // check if current is owner or in view list
-        if (currentUser.equals(owner) || viewerList.contains(currentUser)) {
+        if (currentUser.equals(owner) || listOfUsersThatHaveViewPermissionsToThisRecord.contains(currentUser)) {
             if (record.getRecord_type().equals("Diagnosis Record") && !currentUserisDoctor) {
                 logger.warn(currentUser + " is not a doctor so cannot view a Diagnosis Record.");
             }
             else {
                 // user is owner or in view list
                 // if the records is a diag record the user is a doctor
-                // set the record object we will return to the retrieved record
-                resultRecord = record;
+
+                // It looks like this user can view this record, now lets determine the record type
+                // and populate the SuperSetOfAllMedicalRecordTypes we are returning with the data
+                // from the base MedicalRecord class and the Subtype.
+
+                // set return values for base MedicalRecord
+                resultRecord.setMedicalRecordId(record.getId());
+                resultRecord.setMedicalRecordDate(record.getDate());
+                resultRecord.setMedicalRecordEdit(record.getEdit());
+                resultRecord.setMedicalRecordOwner(record.getOwner());
+                resultRecord.setMedicalRecordPatient(record.getPatient());
+                resultRecord.setMedicalRecordView(record.getView());
+                resultRecord.setMedicalRecordRecord_type(record.getRecord_type());
+
+                // set return values that are dependent on record subtype
+                String recordSubType = record.getRecord_type();
+                switch (recordSubType) {
+                    case "Doctor Exam":
+                        // set return values for DoctorExamRecord
+                        DoctorExamRecord doctorExamRecord = doctorExamRecordRepository.findById(record.getId());
+                        if (doctorExamRecord != null) {
+                            resultRecord.setDoctorExamRecordDoctor(doctorExamRecord.getDoctor());
+                            resultRecord.setDoctorExamRecordExamDate(doctorExamRecord.getDate());
+                            resultRecord.setDoctorExamRecordNotes(doctorExamRecord.getNotes());
+                        }
+                        break;
+
+                    case "Test Result":
+                        // set return values for TestResultRecord
+                        TestResultRecord testResultRecord = testResultRecordRepository.findById(record.getId());
+                        if (testResultRecord != null) {
+                            resultRecord.setTestResultRecorddate(testResultRecord.getDate());
+                            resultRecord.setTestResultRecordDoctor(testResultRecord.getDoctor());
+                            resultRecord.setTestResultRecordLab(testResultRecord.getLab());
+                            resultRecord.setTestResultRecordnotes(testResultRecord.getNotes());
+                        }
+
+                        break;
+
+                    case "Diagnosis":
+                        // set return values for DiagnosisRecord
+                        DiagnosisRecord diagnosisRecord = diagnosisRecordRepository.findById(record.getId());
+
+                        resultRecord.setDiagnosisRecordDate(diagnosisRecord.getDate());
+                        resultRecord.setDiagnosisRecordDoctor(diagnosisRecord.getDoctor());
+                        resultRecord.setDiagnosisRecordDiagnosis(diagnosisRecord.getDiagnosis());
+                        break;
+
+                    case "Insurance Claim":
+                        // set return values for InsuranceClaimRecord
+                        InsuranceClaimRecord insuranceClaimRecord = insuranceClaimRecordRepository.findById(record.getId());
+                        resultRecord.setInsuranceClaimRecordMadmin(insuranceClaimRecord.getMedicalAdministrator());
+                        resultRecord.setInsuranceClaimRecordStatus(insuranceClaimRecord.getStatus());
+                        resultRecord.setInsurance
+                        resultRecord.setInsuranceClaimStatus(insuranceClaimRecord.getClaimAmount());
+
+                        break;
+                    case "Patient Doctor Correspondence":
+                        // set return values for CorrespondenceRecord
+                        CorrespondenceRecord correspondenceRecord = correspondenceRecordRepository.findById(record.getId());
+                        break;
+
+                    case "Raw":
+                        // set return values for RawRecord
+                        RawRecord rawRecord = rawRecordRepository.findById(record.getId());
+                        break;
+
+                    default:
+                        logger.error("Record type not found: " + record.getRecord_type());
+                }
             }
         }
         else {

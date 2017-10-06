@@ -5,6 +5,8 @@
  */
 package edu.syr.cyberseed.sage.server.entities;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,64 +22,24 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "record_insurance")
+@Data
 public class InsuranceClaimRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private Integer id;
+
+    @Column(name = "date")
+    private Date claimDate;
 
     @Column(name = "madmin")
-    private String madmin;
-    
+    private String medicalAdministrator;
+
+    @Column(name = "amount")
+    private Float claimAmount;
+
     @Column(name = "status")
     private String status;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getMadmin() {
-        return madmin;
-    }
-
-    public void setMadmin(String madmin) {
-        this.madmin = madmin;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        if(status.toLowerCase() == "filed" || status.toLowerCase() == "examining" || status.toLowerCase() == "rejected" || status.toLowerCase() == "accepted" || status.toLowerCase() == "paid" )
-        this.status = status.toLowerCase();
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Float getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Float amount) {
-        this.amount = amount;
-    }
-    
-      @Column(name = "date")
-    private Date date;
-      
-      @Column(name = "amount")
-    private Float amount; 
 
 }
