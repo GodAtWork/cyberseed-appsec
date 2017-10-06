@@ -38,8 +38,33 @@
 
 ### Integration Test Client
 
-- [ ] Author standalone API client 
-- [ ] Add test sequence to client
+- [x] Author standalone API client 
+- [x] Add test 1
+- [x] Add test 2
+- [x] Add test 3
+- [x] Add test 4
+- [x] Add test 5
+- [x] Add test 6
+- [ ] Add test 7
+- [ ] Add test 8
+- [ ] Add test 9
+- [ ] Add test 10
+- [ ] Add test 11
+- [ ] Add test 12
+- [ ] Add test 13
+- [ ] Add test 14
+- [ ] Add test 15
+- [ ] Add test 16
+- [ ] Add test 17
+- [ ] Add test 18
+- [ ] Add test 19
+- [ ] Add test 20
+- [ ] Add test 21
+- [ ] Add test 22
+- [ ] Add test 23
+- [ ] Add test 24
+- [ ] Add test 25
+- [ ] Add test 26
 - [ ] Verify expected results
 
 ### Backdoor Client
