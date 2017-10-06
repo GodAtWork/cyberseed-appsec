@@ -42,4 +42,11 @@ public class InsuranceClaimRecord {
     @Column(name = "status")
     private String status;
 
+    public InsuranceClaimRecord(Integer id, String admin, Date date, String status, Float amount) {
+        this.id = id;
+        this.medicalAdministrator = admin;
+        this.claimDate = date;
+        this.status = status;
+        this.claimAmount=amount;
+    }
 }

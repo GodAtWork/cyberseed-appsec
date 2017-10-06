@@ -37,6 +37,10 @@ public class SMIRKMedicalRecords {
     @Autowired
     DoctorRepository doctorRepository;
     @Autowired
+    MedicalAdminRepository medicalAdminRepository;
+    @Autowired
+    InsuranceAdminRepository insuranceAdminRepository;
+    @Autowired
     PermissionsRepository permissionListRepository;
     @Autowired
     DoctorExamRecordRepository doctorExamRecordRepository;
@@ -489,6 +493,156 @@ public class SMIRKMedicalRecords {
     }
 
     //ending test result record
+
+
+    //starting insurance claim record
+    // 5.8 /addInsuranceClaimRecord
+
+    @Secured({"ROLE_INSURANCE_ADMIN","ROLE_MEDICAL_ADMIN"})
+    @ApiOperation(value = "Add a Insurance Record to the database.",
+            notes = "When addRecordInsurance is successfully exercised, the result SHALL be a new Insurance Record with valid non-null values added to the database. The addRecordInsurance service SHALL only be accessible to users with the Insurance Admin role.")
+    @RequestMapping(value = "/addInsuranceClaimRecord", method = RequestMethod.POST)
+    public ResultValue addInsuranceClaimRecord(@RequestBody @Valid InsuranceClaimRecordModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /addInsuranceClaimRecord");
+        String resultString = "FAILURE";
+
+        Medical_admin possibleExistingMedicalAdmin = medicalAdminRepository.findByUsername(submittedData.getMedadUsername());
+        Boolean MedAdminExists = (possibleExistingMedicalAdmin != null) ? true : false;
+        Patient possibleExistingPatient = patientRepository.findByUsername(submittedData.getPatientUsername());
+        Boolean patientExists = (possibleExistingPatient != null) ? true : false;
+
+        if (MedAdminExists && patientExists) {
+
+            //Check if API user specified supplemental users for edit or view permission
+            Boolean editUsersSubmitted = ((submittedData.getEdit() != null) && (submittedData.getEdit().size() > 0)) ? true : false;
+            Boolean viewUsersSubmitted = ((submittedData.getView() != null) && (submittedData.getView().size() > 0)) ? true : false;
+
+            // create a json object of the default edit users
+            ArrayList<String> editUserList = new ArrayList<String>();
+            editUserList.add(currentUser);
+            Map<String, Object> editUserListJson = new HashMap<String, Object>();
+
+
+            // create a json object of the default view users
+            ArrayList<String> viewUserList = new ArrayList<String>();
+            viewUserList.add(currentUser);
+            viewUserList.add(submittedData.getPatientUsername());
+            Map<String, Object> viewUserListJson = new HashMap<String, Object>();
+
+
+            String finalEditPermissions = "";
+            String finalViewPermissions = "";
+
+            if (editUsersSubmitted) {
+                List<String> userSuppliedListOfUsersToGrantEdit = submittedData.getEdit();
+                for (String username : userSuppliedListOfUsersToGrantEdit) {
+                    User possibleUser = userRepository.findByUsername(username);
+                    if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                        editUserList.add(username);
+                    }
+                }
+                editUserListJson.put("users", editUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalEditPermissions = serializer.include("users").serialize(editUserListJson);
+            }
+            else {
+                editUserListJson.put("users", editUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalEditPermissions = serializer.include("users").serialize(editUserListJson);
+            }
+
+            if (viewUsersSubmitted) {
+                List<String> userSuppliedListOfUsersToGrantView = submittedData.getView();
+                for (String username : userSuppliedListOfUsersToGrantView) {
+                    User possibleUser = userRepository.findByUsername(username);
+                    if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                        viewUserList.add(username);
+                    }
+                }
+                viewUserListJson.put("users", viewUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
+            }
+            else {
+                viewUserListJson.put("users", viewUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
+            }
+
+            // was a record id specified?
+            logger.info("Submitted record id is " + submittedData.getId());
+            if (submittedData.getId() != null) {
+                MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
+                InsuranceClaimRecord possibleExistingInsuranceClaimRecord = insuranceClaimRecordRepository.findById(submittedData.getId());
+                Boolean recordExists = (possibleExistingRecord != null) ? true : false;
+                Boolean insuranceClaimRecordExists = (possibleExistingInsuranceClaimRecord != null) ? true : false;
+
+                if (recordExists || insuranceClaimRecordExists) {
+                    logger.error("Cannot create diagnosis record due to recordExists=" + recordExists + " and insuranceClaimRecordExists=" + insuranceClaimRecordExists
+                            + ". You cannot create *new* records with a specific id if records already exist with that id.");
+                }
+                else {
+                    logger.info("Creating records with id " + submittedData.getId());
+                    MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
+                            "Diagnosis Record",
+                            new Date(),
+                            currentUser,
+                            submittedData.getPatientUsername(),
+                            finalEditPermissions,
+                            finalViewPermissions));
+                    logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                    // create the Diagnosis record
+                    InsuranceClaimRecord savedInsuranceClaimRecord = insuranceClaimRecordRepository.save(new InsuranceClaimRecord(submittedData.getId(),
+                            submittedData.getMedadUsername(),
+                            submittedData.getDate(),
+                            submittedData.getStatus(),
+                            submittedData.getAmount()));
+                    logger.info("Created  DiagnosisRecord with id " + savedInsuranceClaimRecord.getId());
+                    if(submittedData.getStatus()=="Filed" || submittedData.getStatus()=="Rejected" || submittedData.getStatus()=="Accepted" || submittedData.getStatus()=="Paid" || submittedData.getStatus()=="Examining") {
+                        resultString = "SUCCESS";
+                    }
+                }
+
+            }
+            else {
+                try {
+                    // create the record
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
+                            new Date(),
+                            currentUser,
+                            submittedData.getPatientUsername(),
+                            finalEditPermissions,
+                            finalViewPermissions));
+                    logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                    // create the Diagnosis record
+                    // Use id auto assigned by db to MedicalRecord for examRecord
+                    InsuranceClaimRecord savedInsuranceClaimRecord = insuranceClaimRecordRepository.save(new InsuranceClaimRecord(submittedData.getId(),
+                            submittedData.getMedadUsername(),
+                            submittedData.getDate(),
+                            submittedData.getStatus(),
+                            submittedData.getAmount()));
+                    logger.info("Created  DiagnosisRecord with id " + savedInsuranceClaimRecord.getId());
+                   if(submittedData.getStatus()=="Filed" || submittedData.getStatus()=="Rejected" || submittedData.getStatus()=="Accepted" || submittedData.getStatus()=="Paid" || submittedData.getStatus()=="Examining") {
+                       resultString = "SUCCESS";
+                   }
+                } catch (Exception e) {
+                    logger.error("Failure creating diagnosis record");
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            logger.error("Cannot create diagnosis record due to doctorExists=" + MedAdminExists + " and patientExists=" +patientExists + ". Both need to exist.");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /addInsuranceClaimRecord");
+        return result;
+    }
+    //ending insurance claim record
 
     // 5.15 /listRecords
     @Secured({"ROLE_USER"})
