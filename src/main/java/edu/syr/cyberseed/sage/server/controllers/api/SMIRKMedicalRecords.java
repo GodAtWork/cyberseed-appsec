@@ -514,99 +514,83 @@ public class SMIRKMedicalRecords {
 
         // check if currentuser is the owner or is in the view list
         if (currentUser.equals(owner) || listOfUsersThatHaveViewPermissionsToThisRecord.contains(currentUser)) {
-            // check if the currentuser has the correct role to access this record type
-            if (record.getRecord_type().equals("Diagnosis") && !currentUserisDoctor) {
-                logger.warn(currentUser + " is not a doctor so cannot view a Diagnosis Record.");
+
+            // user is owner or in view list
+
+            // It looks like this user can view this record, now lets determine the record type
+            // and populate the SuperSetOfAllMedicalRecordTypes we are returning with the data
+            // from the base MedicalRecord class and the Subtype.
+
+            // set return values for base MedicalRecord
+            resultRecord.setMedicalRecordId(record.getId());
+            resultRecord.setMedicalRecordDate(record.getDate());
+            resultRecord.setMedicalRecordEdit(record.getEdit());
+            resultRecord.setMedicalRecordOwner(record.getOwner());
+            resultRecord.setMedicalRecordPatient(record.getPatient());
+            resultRecord.setMedicalRecordView(record.getView());
+            resultRecord.setMedicalRecordRecord_type(record.getRecord_type());
+
+            // set return values that are dependent on record subtype
+            String recordSubType = record.getRecord_type();
+            switch (recordSubType) {
+                case "Doctor Exam":
+                    // set return values for DoctorExamRecord
+                    DoctorExamRecord doctorExamRecord = doctorExamRecordRepository.findById(record.getId());
+                    if (doctorExamRecord != null) {
+                        resultRecord.setDoctorExamRecordDoctor(doctorExamRecord.getDoctor());
+                        resultRecord.setDoctorExamRecordExamDate(doctorExamRecord.getDate());
+                        resultRecord.setDoctorExamRecordNotes(doctorExamRecord.getNotes());
+                    }
+                    break;
+
+                case "Test Result":
+                    // set return values for TestResultRecord
+                    TestResultRecord testResultRecord = testResultRecordRepository.findById(record.getId());
+                    if (testResultRecord != null) {
+                        resultRecord.setTestResultRecorddate(testResultRecord.getDate());
+                        resultRecord.setTestResultRecordDoctor(testResultRecord.getDoctor());
+                        resultRecord.setTestResultRecordLab(testResultRecord.getLab());
+                        resultRecord.setTestResultRecordnotes(testResultRecord.getNotes());
+                    }
+
+                    break;
+
+                case "Diagnosis":
+                    // set return values for DiagnosisRecord
+                    DiagnosisRecord diagnosisRecord = diagnosisRecordRepository.findById(record.getId());
+
+                    resultRecord.setDiagnosisRecordDate(diagnosisRecord.getDate());
+                    resultRecord.setDiagnosisRecordDoctor(diagnosisRecord.getDoctor());
+                    resultRecord.setDiagnosisRecordDiagnosis(diagnosisRecord.getDiagnosis());
+                    break;
+
+                case "Insurance Claim":
+                    // set return values for InsuranceClaimRecord
+                    InsuranceClaimRecord insuranceClaimRecord = insuranceClaimRecordRepository.findById(record.getId());
+                    resultRecord.setInsuranceClaimRecordMadmin(insuranceClaimRecord.getMedicalAdministrator());
+                    resultRecord.setInsuranceClaimRecordStatus(insuranceClaimRecord.getStatus());
+                    resultRecord.setInsuranceClaimRecordClaimDate(insuranceClaimRecord.getClaimDate());
+                    resultRecord.setInsuranceClaimRecordClaimAmount(insuranceClaimRecord.getClaimAmount());
+
+                    break;
+                case "Patient Doctor Correspondence":
+                    // set return values for CorrespondenceRecord
+                    CorrespondenceRecord correspondenceRecord = correspondenceRecordRepository.findById(record.getId());
+                    resultRecord.setCorrespondenceRecorDdoctor(correspondenceRecord.getDoctor());
+                    resultRecord.setCorrespondenceRecordNotes(correspondenceRecord.getNotes());
+                    break;
+
+                case "Raw":
+                    // set return values for RawRecord
+                    RawRecord rawRecord = rawRecordRepository.findById(record.getId());
+                    resultRecord.setRawRecordDate(rawRecord.getDate());
+                    resultRecord.setRawRecordDescription(rawRecord.getDescription());
+                    break;
+
+                default:
+                    logger.error("Record type not found: " + record.getRecord_type());
             }
-            else if (record.getRecord_type().equals("Insurance Claim") && !(currentUserisInsuranceAdmin || currentUserisMedicalAdmin)) {
-                logger.warn(currentUser + " is not a medical admin or insurance admin so cannot view a Insurance Claim Record.");
-            }
-            else if (record.getRecord_type().equals("Patient Doctor Correspondence") && !(currentUserisDoctor || currentUserisPatient)) {
-                logger.warn(currentUser + " is not a doctor or patient so cannot view a Patient Doctor Correspondence Record.");
-            }
-            else if (record.getRecord_type().equals("Doctor Exam") && !(currentUserisDoctor || currentUserisNurse || currentUserisMedicalAdmin)) {
-                logger.warn(currentUser + " is not a doctor, nurse, or medical admin so cannot view a Doctor Exam Record.");
-            }
-            else if (record.getRecord_type().equals("Test Result") && !(currentUserisDoctor || currentUserisNurse || currentUserisMedicalAdmin)) {
-                logger.warn(currentUser + " is not a doctor, nurse, or medical admin so cannot view a Test Result Record.");
-            }
-            else {
-                // user is owner or in view list and has the correct role for this record
 
-                // It looks like this user can view this record, now lets determine the record type
-                // and populate the SuperSetOfAllMedicalRecordTypes we are returning with the data
-                // from the base MedicalRecord class and the Subtype.
-
-                // set return values for base MedicalRecord
-                resultRecord.setMedicalRecordId(record.getId());
-                resultRecord.setMedicalRecordDate(record.getDate());
-                resultRecord.setMedicalRecordEdit(record.getEdit());
-                resultRecord.setMedicalRecordOwner(record.getOwner());
-                resultRecord.setMedicalRecordPatient(record.getPatient());
-                resultRecord.setMedicalRecordView(record.getView());
-                resultRecord.setMedicalRecordRecord_type(record.getRecord_type());
-
-                // set return values that are dependent on record subtype
-                String recordSubType = record.getRecord_type();
-                switch (recordSubType) {
-                    case "Doctor Exam":
-                        // set return values for DoctorExamRecord
-                        DoctorExamRecord doctorExamRecord = doctorExamRecordRepository.findById(record.getId());
-                        if (doctorExamRecord != null) {
-                            resultRecord.setDoctorExamRecordDoctor(doctorExamRecord.getDoctor());
-                            resultRecord.setDoctorExamRecordExamDate(doctorExamRecord.getDate());
-                            resultRecord.setDoctorExamRecordNotes(doctorExamRecord.getNotes());
-                        }
-                        break;
-
-                    case "Test Result":
-                        // set return values for TestResultRecord
-                        TestResultRecord testResultRecord = testResultRecordRepository.findById(record.getId());
-                        if (testResultRecord != null) {
-                            resultRecord.setTestResultRecorddate(testResultRecord.getDate());
-                            resultRecord.setTestResultRecordDoctor(testResultRecord.getDoctor());
-                            resultRecord.setTestResultRecordLab(testResultRecord.getLab());
-                            resultRecord.setTestResultRecordnotes(testResultRecord.getNotes());
-                        }
-
-                        break;
-
-                    case "Diagnosis":
-                        // set return values for DiagnosisRecord
-                        DiagnosisRecord diagnosisRecord = diagnosisRecordRepository.findById(record.getId());
-
-                        resultRecord.setDiagnosisRecordDate(diagnosisRecord.getDate());
-                        resultRecord.setDiagnosisRecordDoctor(diagnosisRecord.getDoctor());
-                        resultRecord.setDiagnosisRecordDiagnosis(diagnosisRecord.getDiagnosis());
-                        break;
-
-                    case "Insurance Claim":
-                        // set return values for InsuranceClaimRecord
-                        InsuranceClaimRecord insuranceClaimRecord = insuranceClaimRecordRepository.findById(record.getId());
-                        resultRecord.setInsuranceClaimRecordMadmin(insuranceClaimRecord.getMedicalAdministrator());
-                        resultRecord.setInsuranceClaimRecordStatus(insuranceClaimRecord.getStatus());
-                        resultRecord.setInsuranceClaimRecordClaimDate(insuranceClaimRecord.getClaimDate());
-                        resultRecord.setInsuranceClaimRecordClaimAmount(insuranceClaimRecord.getClaimAmount());
-
-                        break;
-                    case "Patient Doctor Correspondence":
-                        // set return values for CorrespondenceRecord
-                        CorrespondenceRecord correspondenceRecord = correspondenceRecordRepository.findById(record.getId());
-                        resultRecord.setCorrespondenceRecorDdoctor(correspondenceRecord.getDoctor());
-                        resultRecord.setCorrespondenceRecordNotes(correspondenceRecord.getNotes());
-                        break;
-
-                    case "Raw":
-                        // set return values for RawRecord
-                        RawRecord rawRecord = rawRecordRepository.findById(record.getId());
-                        resultRecord.setRawRecordDate(rawRecord.getDate());
-                        resultRecord.setRawRecordDescription(rawRecord.getDescription());
-                        break;
-
-                    default:
-                        logger.error("Record type not found: " + record.getRecord_type());
-                }
-            }
         }
         else {
             logger.warn(currentUser + " is neither the owner nor has view permissions to this record");
