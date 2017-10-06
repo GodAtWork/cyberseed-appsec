@@ -523,7 +523,7 @@ public class SMIRKMedicalRecords {
     @Secured({"ROLE_INSURANCE_ADMIN","ROLE_MEDICAL_ADMIN"})
     @ApiOperation(value = "View a patient.",
             notes = "When viewRecord service is successfully exercised the server application SHALL return the record corresponding to the record ID requested in the service call. The viewRecord service SHALL only return the record if the accessing user is listed on the records view permissions list or is the record owner. The viewRecord service SHALL only return a Diagnosis Record if the accessing user has Doctor Role.")
-    @RequestMapping(value = "/viewPatient/{submittedUsername}", method = RequestMethod.GET)
+    @RequestMapping(value = "/viewPatientProfile/{submittedUsername}", method = RequestMethod.GET)
     public ArrayList<String> viewPatient(@PathVariable String submittedUsername) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean currentUserisInsuranceAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_INSURANCE_ADMIN"));
