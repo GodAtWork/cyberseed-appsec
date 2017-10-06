@@ -81,6 +81,7 @@ public class SMIRKUsersController {
             logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
             try {
                 // create the User record
+                // create the Patient record
                 userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
                         submittedData.getPassword(),
                         submittedData.getFname(),
@@ -88,7 +89,6 @@ public class SMIRKUsersController {
                         roles,
                         null,
                         null)));
-                // create the Patient record
                 patientRepository.save(Arrays.asList(new Patient(submittedData.getUsername(), submittedData.getDob(), submittedData.getSsn(), submittedData.getAddress())));
                 resultString = "SUCCESS";
                 logger.info("Created patient user " + submittedData.getUsername());

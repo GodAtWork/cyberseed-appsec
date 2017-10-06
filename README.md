@@ -17,7 +17,7 @@
 - [x] /createInsAdmin	
 - [x] /editPerm	
 - [x] /addDoctorExamRecord	
-- [ ] /addTestResultRecord	
+- [x] /addTestResultRecord	
 - [x] /addDiagnosisRecord	
 - [ ] /addInsuranceClaimRecord	
 - [ ] /addRawRecord	
@@ -32,7 +32,7 @@
 - [x] /editSysAdmin	
 - [x] /editMedAdmin	
 - [x] /editInsAdmin	
-- [ ] /viewPatientProfile
+- [x] /viewPatientProfile
 - [x] /viewRecoveryPhrase
 - [ ] /removeUserProfile
 
