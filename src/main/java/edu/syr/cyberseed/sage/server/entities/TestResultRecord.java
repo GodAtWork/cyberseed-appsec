@@ -20,19 +20,19 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "record_testresult")
-public class TestResultRecord {
+public class TestResultsRecord {
 
     @Id
     @Column(name = "id")
-    private long id;
-    
+    private int id;
+
     @Column(name = "doctor")
     private String doctor;
-    
-      @Column(name = "lab")
+
+    @Column(name = "lab")
     private String lab;
-      
-       @Column(name = "notes")
+
+    @Column(name = "notes")
     private String notes;
 
     @Column(name = "date")
@@ -42,7 +42,7 @@ public class TestResultRecord {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -70,8 +70,10 @@ public class TestResultRecord {
         this.notes = notes;
     }
 
+    protected TestResultsRecord() {
+    }
 
-    public TestResultRecord(Integer id, String doctor, String lab, String notes, Date date) {
+    public TestResultsRecord(Integer id, String doctor, String lab, String notes, Date date) {
         this.id = id;
         this.doctor = doctor;
         this.lab = lab;
