@@ -76,14 +76,16 @@ public class SMIRKMedicalRecords {
 
             // create a json object of the default edit users
             ArrayList<String> editUserList = new ArrayList<String>();
-            editUserList.add(currentUser);
+            // by default do not add any users
+            //editUserList.add(currentUser);
             Map<String, Object> editUserListJson = new HashMap<String, Object>();
 
 
             // create a json object of the default view users
             ArrayList<String> viewUserList = new ArrayList<String>();
-            viewUserList.add(currentUser);
-            viewUserList.add(submittedData.getPatientUsername());
+            // by default do not add any users
+            //viewUserList.add(currentUser);
+            //viewUserList.add(submittedData.getPatientUsername());
             Map<String, Object> viewUserListJson = new HashMap<String, Object>();
 
 
