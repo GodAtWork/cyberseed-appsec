@@ -1,6 +1,5 @@
 package edu.syr.cyberseed.sage.server.repositories;
 
-import edu.syr.cyberseed.sage.server.entities.CorrespondenceRecord;
 import edu.syr.cyberseed.sage.server.entities.RawRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 

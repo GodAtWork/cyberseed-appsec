@@ -5,6 +5,8 @@
  */
 package edu.syr.cyberseed.sage.server.entities;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,6 +22,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "record_raw")
+@Data
 public class RawRecord {
 
     @Id

@@ -567,18 +567,22 @@ public class SMIRKMedicalRecords {
                         InsuranceClaimRecord insuranceClaimRecord = insuranceClaimRecordRepository.findById(record.getId());
                         resultRecord.setInsuranceClaimRecordMadmin(insuranceClaimRecord.getMedicalAdministrator());
                         resultRecord.setInsuranceClaimRecordStatus(insuranceClaimRecord.getStatus());
-                        resultRecord.setInsurance
-                        resultRecord.setInsuranceClaimStatus(insuranceClaimRecord.getClaimAmount());
+                        resultRecord.setInsuranceClaimRecordClaimDate(insuranceClaimRecord.getClaimDate());
+                        resultRecord.setInsuranceClaimRecordClaimAmount(insuranceClaimRecord.getClaimAmount());
 
                         break;
                     case "Patient Doctor Correspondence":
                         // set return values for CorrespondenceRecord
                         CorrespondenceRecord correspondenceRecord = correspondenceRecordRepository.findById(record.getId());
+                        resultRecord.setCorrespondenceRecorDdoctor(correspondenceRecord.getDoctor());
+                        resultRecord.setCorrespondenceRecordNotes(correspondenceRecord.getNotes());
                         break;
 
                     case "Raw":
                         // set return values for RawRecord
                         RawRecord rawRecord = rawRecordRepository.findById(record.getId());
+                        resultRecord.setRawRecordDate(rawRecord.getDate());
+                        resultRecord.setRawRecordDescription(rawRecord.getDescription());
                         break;
 
                     default:

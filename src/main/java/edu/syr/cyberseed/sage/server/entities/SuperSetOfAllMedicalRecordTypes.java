@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class SuperSetOfAllMedicalRecordTypes {
@@ -36,6 +37,8 @@ public class SuperSetOfAllMedicalRecordTypes {
     //fields from InsuranceClaimRecord
     private String insuranceClaimRecordMadmin;
     private String insuranceClaimRecordStatus;
+    private Date insuranceClaimRecordClaimDate;
+    private Float insuranceClaimRecordClaimAmount;
 
     //fields from RawRecord
     private String rawRecordDescription;
@@ -45,7 +48,7 @@ public class SuperSetOfAllMedicalRecordTypes {
     private String correspondenceRecorDdoctor;
     private String correspondenceRecordNotes;
 
-    //fields from CorrespondenceNoteRecord
+    //fields from CorrespondenceRecordNote
     private String correspondenceNoteText;
     private Date correspondenceNoteDate;
 

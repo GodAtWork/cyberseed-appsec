@@ -35,6 +35,6 @@ public class CorrespondenceRecord {
     private String doctor;
     
     @Column(name = "notes")
-    private List<String> notes;
+    private String notes;
 
 }
