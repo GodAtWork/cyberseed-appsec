@@ -17,12 +17,13 @@ public class CorrespondenceRecordModel {
     @Range(min = 1l, max=999999999)
     private Integer id;
 
-    @NotNull
+    @Range(min = 1, max=999999999)
+    private Integer note_id;
+
     @Size(min = 1, max = 255)
     @Pattern(regexp = "^[A-Za-z0-9]*$")
     private String doctorUsername;
 
-    @NotNull
     @Size(min = 1, max = 255)
     @Pattern(regexp = "^[A-Za-z0-9]*$")
     private String patientUsername;

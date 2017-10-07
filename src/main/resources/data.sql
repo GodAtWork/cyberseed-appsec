@@ -48,7 +48,7 @@ COMMIT;
 --  Records of `record_correspondence`
 -- ----------------------------
 BEGIN;
-INSERT INTO `record_correspondence` VALUES ('doctor', '1' ,NULL,NULL);
+INSERT INTO `record_correspondence` VALUES ('doctor', '1' ,NULL,NULL,NULL);
 COMMIT;
 
 -- -------------------------

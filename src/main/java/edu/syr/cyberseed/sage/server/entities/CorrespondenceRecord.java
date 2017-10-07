@@ -25,14 +25,17 @@ import java.util.List;
 @Table(name = "record_correspondence")
 @Data
 public class CorrespondenceRecord {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "note_id")
+    private Integer note_id;
+
     @Column(name = "id")
     private Integer id;
 
     @Column(name = "doctor")
     private String doctor;
-    
+
     @Column(name = "note_date")
     private Date note_date;
 
@@ -47,10 +50,9 @@ public class CorrespondenceRecord {
         this.doctor=doctor;
     }
 
-    public CorrespondenceRecord(Integer id, String doctor, Date d, String n)
+    public CorrespondenceRecord(Integer id, Date d, String n)
     {
         this.id=id;
-        this.doctor=doctor;
         this.note_date=d;
         this.note_text=n;
     }

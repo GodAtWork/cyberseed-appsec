@@ -111,10 +111,12 @@ CREATE TABLE `record` (
 -- ----------------------------
 DROP TABLE IF EXISTS `record_correspondence`;
 CREATE TABLE `record_correspondence` (
-  `doctor` varchar(255) NOT NULL,
+  `doctor` varchar(255),
   `id` int(255) NOT NULL,
+  `note_id` int(255) NOT NULL AUTO_INCREMENT,
   `note_date` date,
   `note_text` VARCHAR(255),
+  PRIMARY KEY (`note_id`),
   KEY `FK_record_correspondence_record` (`id`),
   KEY `FK_record_correspondence_doctor` (`doctor`),
   CONSTRAINT `FK_record_correspondence_doctor` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,

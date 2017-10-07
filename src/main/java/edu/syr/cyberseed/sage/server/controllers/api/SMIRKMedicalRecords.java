@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.prism.impl.Disposer;
 import edu.syr.cyberseed.sage.server.entities.*;
 import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
@@ -938,7 +939,54 @@ public class SMIRKMedicalRecords {
     //    end of correspondance record
 
     // 5.14 /AddCorrespondenceNote
-    // todo
+
+    @Secured({"ROLE_DOCTOR","ROLE_PATIENT"})
+    @ApiOperation(value = "Add a Correspondence Record to the database.",
+            notes = "When createCorrespondenceRecord is successfully exercised, the result SHALL be a new Correspondance Record with valid non-null values added to the database. The createCorrespondenceRecord service SHALL only be accessible to users with the Doctor role and patient role.")
+    @RequestMapping(value = "/addCorrespondenceNote", method = RequestMethod.POST)
+    public ResultValue createCorrespondenceNote(@RequestBody @Valid CorrespondenceRecordModel submittedData) {
+
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /addCorrespondenceNote");
+        String resultString = "FAILURE";
+
+        MedicalRecord a = medicalRecordRepository.findById(submittedData.getId());
+        Boolean record1 = (a != null) ? true : false;
+        Boolean correctInfo=false;
+        String temp1=a.getOwner();
+        String temp2=a.getPatient();
+
+        if ( currentUser.equals(temp1) || currentUser.equals(temp2))
+        {
+            correctInfo=true;
+        }
+
+
+        if (record1 && correctInfo) {
+
+            // was a record id specified?
+            logger.info("Submitted record id is " + submittedData.getId());
+            if (submittedData.getId() != null) {
+                    // create the Diagnosis record
+                    CorrespondenceRecord savedCorrespondenceRecord = correspondenceRecordRepository.save(new CorrespondenceRecord(submittedData.getId(),
+                            submittedData.getNote_date(), submittedData.getNote_text()));
+                    logger.info("Created  Correspondence note with id " + savedCorrespondenceRecord.getId());
+                    resultString = "SUCCESS";
+
+            }
+        }
+        else {
+            logger.error("Cannot create CorrespondenceNote");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /addCorrespondenceNote");
+        return result;
+    }
+    //    end of correspondance record
+
+
+
 
     // 5.15 /listRecords
     @Secured({"ROLE_USER"})
