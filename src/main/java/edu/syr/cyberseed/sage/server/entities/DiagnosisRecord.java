@@ -29,7 +29,7 @@ public class DiagnosisRecord {
     @Column(name = "diagnosis")
     private String diagnosis;
     
-      @Column(name = "date")
+    @Column(name = "date")
     private Date date;
 
     public Integer getId() {

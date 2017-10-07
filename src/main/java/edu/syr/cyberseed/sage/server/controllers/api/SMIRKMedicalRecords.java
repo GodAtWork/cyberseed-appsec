@@ -11,6 +11,7 @@ import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
 import flexjson.JSONSerializer;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.*;
 
@@ -436,10 +438,16 @@ public class SMIRKMedicalRecords {
                             + ". You cannot create *new* records with a specific id if records already exist with that id.");
                 }
                 else {
+                    Date res_date;
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
                             "Diagnosis Record",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
@@ -1109,7 +1117,7 @@ public class SMIRKMedicalRecords {
 
                     break;
 
-                case "Diagnosis":
+                case "Diagnosis Record":
                     // set return values for DiagnosisRecord
                     DiagnosisRecord diagnosisRecord = diagnosisRecordRepository.findById(record.getId());
 

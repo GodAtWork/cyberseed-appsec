@@ -264,7 +264,7 @@ public class SMIRKUsersController {
     @Secured({"ROLE_ADD_MEDICAL_ADMIN"})
     @ApiOperation(value = "Add a medical admin user profile to the system.",
             notes = "When createMedAdmin service is successfully exercised, the result SHALL be a new medical admin User Profile with default permissions and data for all fields in the medical admin User Profile type with valid non-null values added to the database.  The medical admin service SHALL only be accessible to a user with Add medical admin permission.")
-    @RequestMapping(value = "/createMedadmin", method = RequestMethod.POST)
+    @RequestMapping(value = "/createMedAdmin", method = RequestMethod.POST)
     public ResultValue createMedAdmin(@RequestBody @Valid MedicalAdminModel submittedData) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("Authenticated user " + currentUser + " is starting execution of service /createMedAdmin");

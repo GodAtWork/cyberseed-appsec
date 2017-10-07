@@ -20,6 +20,8 @@ public class DiagnosisRecordModel {
     @NotNull
     private Date DiagnosisDate;
 
+    private Date date;
+
     @NotNull
     @Size(min = 1, max = 255)
     @Pattern(regexp = "^[A-Za-z0-9]*$")
