@@ -175,6 +175,7 @@ CREATE TABLE `record_raw` (
   `id` int(11) NOT NULL,
   `description` char(255) NOT NULL,
   `file` binary(255) NOT NULL,
+  `length` int(3) NOT NULL,
   KEY `FK_record_raw_record` (`id`),
   CONSTRAINT `FK_record_raw_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

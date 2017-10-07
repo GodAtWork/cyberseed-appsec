@@ -42,7 +42,7 @@ public class SuperSetOfAllMedicalRecordTypes {
 
     //fields from RawRecord
     private String rawRecordDescription;
-    private Date rawRecordDate;
+    private String rawRecordBase64EncodedBinary;
 
     //fields from CorrespondenceRecord
     private String correspondenceRecordDoctor;
