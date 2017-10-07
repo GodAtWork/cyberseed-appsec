@@ -113,7 +113,8 @@ DROP TABLE IF EXISTS `record_correspondence`;
 CREATE TABLE `record_correspondence` (
   `doctor` varchar(255) NOT NULL,
   `id` int(255) NOT NULL,
-  `notes` varchar(50) NOT NULL,
+  `note_date` date,
+  `note_text` VARCHAR(255),
   KEY `FK_record_correspondence_record` (`id`),
   KEY `FK_record_correspondence_doctor` (`doctor`),
   CONSTRAINT `FK_record_correspondence_doctor` FOREIGN KEY (`doctor`) REFERENCES `doctor` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -158,23 +159,12 @@ CREATE TABLE `record_insurance` (
   `id` int(255) NOT NULL,
   `date` date NOT NULL,
   `madmin` varchar(255) NOT NULL,
-  `amount` float NOT NULL,
+  `amount` Float NOT NULL,
   `status` varchar(255) NOT NULL,
   KEY `FK_record_insurance_record` (`id`),
   KEY `FK_record_insurance_user` (`madmin`),
   CONSTRAINT `FK_record_insurance_record` FOREIGN KEY (`id`) REFERENCES `record` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_record_insurance_user` FOREIGN KEY (`madmin`) REFERENCES `medical_admin` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
---  Table structure for `record_note`
--- ----------------------------
-DROP TABLE IF EXISTS `record_note`;
-CREATE TABLE `record_note` (
-  `note_id` int(255) NOT NULL,
-  `date` date NOT NULL,
-  `text` varchar(255) NOT NULL,
-  PRIMARY KEY (`note_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------

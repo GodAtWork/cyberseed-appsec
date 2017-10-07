@@ -48,7 +48,7 @@ COMMIT;
 --  Records of `record_correspondence`
 -- ----------------------------
 BEGIN;
-INSERT INTO `record_correspondence` VALUES ('doctor', '1', 'note');
+INSERT INTO `record_correspondence` VALUES ('doctor', '1' ,NULL,NULL);
 COMMIT;
 
 ----------------------------
@@ -70,13 +70,6 @@ COMMIT;
 -- ----------------------------
 BEGIN;
 INSERT INTO `record_insurance` VALUES ('1', '2017-09-30', 'medad', '123', 's');
-COMMIT;
-
--- ----------------------------
---  Records of `record_note`
--- ----------------------------
-BEGIN;
-INSERT INTO `record_note` VALUES ('1', '2017-09-30', '1');
 COMMIT;
 
 -- ----------------------------

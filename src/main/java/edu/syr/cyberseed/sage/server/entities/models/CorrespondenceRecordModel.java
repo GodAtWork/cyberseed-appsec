@@ -11,28 +11,23 @@ import java.util.List;
 
 @XmlRootElement
 @Data
-public class InsuranceClaimRecordModel {
+public class CorrespondenceRecordModel {
 
     @Range(min = 1l, max=999999999)
     private Integer id;
 
     @NotNull
-    private Date date;
+    @Size(min = 1, max = 255)
+    private String doctorUsername;
 
     @NotNull
     @Size(min = 1, max = 255)
     private String patientUsername;
 
-    @NotNull
     @Size(min = 1, max = 255)
-    private String medadUsername;
+    private String note_text;
 
-    @NotNull
-    @Size(min = 1, max = 255)
-    private String status;
-
-    @NotNull
-    private Float amount;
+    private Date note_date;
 
     // optional
     private List<String> edit;

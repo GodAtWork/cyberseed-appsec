@@ -27,14 +27,34 @@ import java.util.List;
 public class CorrespondenceRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Integer id;
 
     @Column(name = "doctor")
     private String doctor;
     
-    @Column(name = "notes")
-    private String notes;
+    @Column(name = "note_date")
+    private Date note_date;
+
+    @Column(name = "note_text")
+    private String note_text;
+
+    private CorrespondenceRecord(){}
+
+    public CorrespondenceRecord(Integer id, String doctor)
+    {
+        this.id=id;
+        this.doctor=doctor;
+    }
+
+    public CorrespondenceRecord(Integer id, String doctor, Date d, String n)
+    {
+        this.id=id;
+        this.doctor=doctor;
+        this.note_date=d;
+        this.note_text=n;
+    }
+
+
 
 }

@@ -26,27 +26,31 @@ import java.util.Date;
 public class InsuranceClaimRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Integer id;
 
     @Column(name = "date")
-    private Date claimDate;
+    private Date date;
 
     @Column(name = "madmin")
-    private String medicalAdministrator;
+    private String madmin;
 
     @Column(name = "amount")
-    private Float claimAmount;
+    private Float amount;
 
     @Column(name = "status")
     private String status;
 
+
+    protected InsuranceClaimRecord()
+    {
+
+    }
     public InsuranceClaimRecord(Integer id, String admin, Date date, String status, Float amount) {
         this.id = id;
-        this.medicalAdministrator = admin;
-        this.claimDate = date;
+        this.madmin = admin;
+        this.date = date;
         this.status = status;
-        this.claimAmount=amount;
+        this.amount=amount;
     }
 }

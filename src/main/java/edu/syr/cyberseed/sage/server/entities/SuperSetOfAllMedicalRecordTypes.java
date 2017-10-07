@@ -45,11 +45,8 @@ public class SuperSetOfAllMedicalRecordTypes {
     private Date rawRecordDate;
 
     //fields from CorrespondenceRecord
-    private String correspondenceRecorDdoctor;
-    private String correspondenceRecordNotes;
-
-    //fields from CorrespondenceRecordNote
-    private String correspondenceNoteText;
-    private Date correspondenceNoteDate;
+    private String correspondenceRecordDoctor;
+    private String correspondenceRecordNoteText;
+    private Date correspondenceRecordNoteDate;
 
 }
