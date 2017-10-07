@@ -66,12 +66,7 @@ public class AuthenticationConfig extends WebMvcConfigurerAdapter {
                     .antMatchers("/editInsAdmin").access("hasRole('ROLE_EDIT_INSURANCE_ADMIN')")
                     .antMatchers("/viewPatientProfile").access("hasRole('ROLE_VIEW_PII')")
                     .antMatchers("/viewRecoveryPhrase").access("hasRole('ROLE_SYSTEM_ADMIN')")
-                    .antMatchers("/removeUserProfile").access("hasRole('ROLE_DELETE_USER_PROFILE')")
-                    .antMatchers("/findAll").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-                    .antMatchers("/findbyrecordID").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-                    .antMatchers("/findbypatient").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-                    .antMatchers("/findbyowner").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-                    .antMatchers("/save").access("hasRole('ROLE_ADMIN')");
+                    .antMatchers("/removeUserProfile").access("hasRole('ROLE_DELETE_USER_PROFILE')");
 
             http.csrf().disable();
         }

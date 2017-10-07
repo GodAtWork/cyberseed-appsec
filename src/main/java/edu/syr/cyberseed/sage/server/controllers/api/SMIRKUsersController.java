@@ -57,7 +57,7 @@ public class SMIRKUsersController {
     @ApiOperation(value = "Add a patient user profile to the system.",
             notes = "When createPatient service is successfully exercised, the result SHALL be a new Patient User Profile with default permissions and data for all fields in the Patient User Profile type with valid non-null values added to the database.  The createPatient service SHALL only be accessible to a user with Add Patient permission.")
     @RequestMapping(value = "/createPatient", method = RequestMethod.POST)
-     public ResultValue createPatient(@RequestBody @Valid PatientUserModel submittedData) {
+    public ResultValue createPatient(@RequestBody @Valid PatientUserModel submittedData) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("Authenticated user " + currentUser + " is starting execution of service /createPatient");
         String resultString = "FAILURE";
@@ -542,7 +542,7 @@ public class SMIRKUsersController {
         return result;
     }
 
-//starting edit nurse
+    //starting edit nurse
     // 5.20 /editNurse
     @Secured({"ROLE_EDIT_NURSE"})
     @ApiOperation(value = "Edit existing nurse user profile in the system.",
@@ -822,5 +822,32 @@ public class SMIRKUsersController {
     }
 
     // 5.26 /removeUserProfile
-    //todo
+    @Secured({"ROLE_DELETE_USER_PROFILE"})
+    @ApiOperation(value = "Remove existing user profile in the system.",
+            notes = "The removeUserProfile service SHALL provide the capability to remove an existing user profile from the system. The removeUserProfilet service SHALL only remove the user profile specified in the call to the service. The removeUserProfile service SHALL only remove a patient user profile if the calling user has Delete User Profile permissions")
+    @RequestMapping(value = "/removeUserProfile", method = RequestMethod.POST)
+    public ResultValue removeUserProfile(@RequestBody @Valid RemoveUserModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editPatient");
+        String resultString = "FAILURE";
+        User user = userRepository.findByUsername(submittedData.getUsername());
+        Boolean userExists = ((user != null) && (StringUtils.isNotEmpty(user.getUsername()))) ? true : false;
+
+        if (userExists ) {
+            userRepository.deleteUserByUsername(user.getUsername());
+            // todo verify cascade or remove subtypes
+
+            resultString = "SUCCESS";
+            logger.info(currentUser + " completed removing user profile for " + submittedData.getUsername());
+
+        }
+        else {
+            logger.warn(currentUser + " tried to remove user profile for user " + submittedData.getUsername() + " but this user does not exist");
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /removeUserProfile");
+        return result;
+    }
+
 }

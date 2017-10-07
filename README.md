@@ -25,7 +25,7 @@
 - [ ] /addCorrespondenceNote	
 - [x] /listRecords	
 - [x] /viewRecord	
-- [ ] /editRecordPerm	
+- [x] /editRecordPerm	
 - [x] /editPatient	
 - [x] /editDoctor	
 - [x] /editNurse	
@@ -34,7 +34,7 @@
 - [x] /editInsAdmin	
 - [x] /viewPatientProfile
 - [x] /viewRecoveryPhrase
-- [ ] /removeUserProfile
+- [x] /removeUserProfile
 
 ### Integration Test Client
 
