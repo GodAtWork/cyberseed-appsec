@@ -293,10 +293,18 @@ public class SMIRKMedicalRecords {
                             + ". You cannot create *new* records with a specific id if records already exist with that id.");
                 }
                 else {
+
+                    Date res_date;
+
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
                             "Test Result",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
@@ -314,9 +322,16 @@ public class SMIRKMedicalRecords {
             }
             else {
                 try {
+                    Date res_date;
+
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     // create the record
                     MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Test Result",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
@@ -466,9 +481,16 @@ public class SMIRKMedicalRecords {
             }
             else {
                 try {
+                    Date res_date;
+
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     // create the record
-                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
-                            new Date(),
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Diagnosis Record",
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,

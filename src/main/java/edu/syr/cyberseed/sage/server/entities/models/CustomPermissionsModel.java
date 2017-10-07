@@ -17,10 +17,10 @@ public class CustomPermissionsModel {
     @Pattern(regexp = "^[A-Za-z0-9]*$")
     private String username;
     
-    @NotNull
+
     private List<String> customadds;
 
-    @NotNull
+
     private List<String> customremoves;
 
 }

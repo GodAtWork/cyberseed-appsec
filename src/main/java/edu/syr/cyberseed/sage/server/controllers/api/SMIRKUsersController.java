@@ -76,6 +76,7 @@ public class SMIRKUsersController {
             JSONSerializer serializer = new JSONSerializer();
             roles = serializer.include("roles").serialize(rolesJson);
 
+            String a="[\"ROLE_NONE\"]";
             logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
             try {
                 // create the User record
@@ -85,7 +86,7 @@ public class SMIRKUsersController {
                         submittedData.getFname(),
                         submittedData.getLname(),
                         roles,
-                        null,
+                        a,
                         null)));
                 patientRepository.save(Arrays.asList(new Patient(submittedData.getUsername(), submittedData.getDob(), submittedData.getSsn(), submittedData.getAddress())));
                 resultString = "SUCCESS";
@@ -786,6 +787,7 @@ public class SMIRKUsersController {
             recordList.add(record.getFname());
             recordList.add(record.getLname());
             recordList.add(record.getRoles());
+            recordList.add(record.getCustom_permissions_to_add());
             recordList.add(precord.getAddress());
             recordList.add(precord.getSsn().toString());
             recordList.add(precord.getDob().toString());
