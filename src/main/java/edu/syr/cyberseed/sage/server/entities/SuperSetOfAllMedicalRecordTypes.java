@@ -45,8 +45,6 @@ public class SuperSetOfAllMedicalRecordTypes {
     private String rawRecordBase64EncodedBinary;
 
     //fields from CorrespondenceRecord
-    private String correspondenceRecordDoctor;
-    private String correspondenceRecordNoteText;
-    private Date correspondenceRecordNoteDate;
+    private CorrespondenceRecord[] correspondenceRecordList;
 
 }

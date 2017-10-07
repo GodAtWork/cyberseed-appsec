@@ -28,7 +28,7 @@ public class CorrespondenceRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "note_id")
-    private Integer note_id;
+    private Integer noteId;
 
     @Column(name = "id")
     private Integer id;

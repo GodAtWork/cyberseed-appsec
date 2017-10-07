@@ -877,18 +877,18 @@ public class SMIRKMedicalRecords {
             logger.info("Submitted record id is " + submittedData.getId());
             if (submittedData.getId() != null) {
                 MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
-                CorrespondenceRecord possibleExistingCorrespondenceRecord = correspondenceRecordRepository.findById(submittedData.getId());
+                CorrespondenceRecord possibleExistingCorrespondenceRecord = correspondenceRecordRepository.findByNoteId(submittedData.getId());
                 Boolean recordExists = (possibleExistingRecord != null) ? true : false;
                 Boolean CorrespondenceRecordExists = (possibleExistingCorrespondenceRecord != null) ? true : false;
 
                 if (recordExists || CorrespondenceRecordExists) {
-                    logger.error("Cannot create diagnosis record due to recordExists=" + recordExists + " and diagnosisRecordExists=" + CorrespondenceRecordExists
+                    logger.error("Cannot create Patient Doctor Correspondence record due to recordExists=" + recordExists + " and diagnosisRecordExists=" + CorrespondenceRecordExists
                             + ". You cannot create *new* records with a specific id if records already exist with that id.");
                 }
                 else {
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
-                            "Diagnosis Record",
+                            "Patient Doctor Correspondence",
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -899,7 +899,7 @@ public class SMIRKMedicalRecords {
                     // create the Diagnosis record
                     CorrespondenceRecord savedCorrespondenceRecord = correspondenceRecordRepository.save(new CorrespondenceRecord(submittedData.getId(),
                             submittedData.getDoctorUsername()));
-                    logger.info("Created  DiagnosisRecord with id " + savedCorrespondenceRecord.getId());
+                    logger.info("Created  Patient Doctor Correspondence record with id " + savedCorrespondenceRecord.getId());
                     resultString = "SUCCESS";
                 }
 
@@ -907,7 +907,7 @@ public class SMIRKMedicalRecords {
             else {
                 try {
                     // create the record
-                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Patient Doctor Correspondence",
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -915,7 +915,7 @@ public class SMIRKMedicalRecords {
                             finalViewPermissions));
                     logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
-                    // create the Diagnosis record
+                    // create the Patient Doctor Correspondence record
                     // Use id auto assigned by db to MedicalRecord for examRecord
                     CorrespondenceRecord savedCorrespondenceRecord = correspondenceRecordRepository.save(new CorrespondenceRecord(savedMedicalRecord.getId(),
                             submittedData.getDoctorUsername()));
@@ -1129,10 +1129,8 @@ public class SMIRKMedicalRecords {
                     break;
                 case "Patient Doctor Correspondence":
                     // set return values for CorrespondenceRecord
-                    CorrespondenceRecord correspondenceRecord = correspondenceRecordRepository.findById(record.getId());
-                    resultRecord.setCorrespondenceRecordDoctor(correspondenceRecord.getDoctor());
-                    resultRecord.setCorrespondenceRecordNoteDate(correspondenceRecord.getNote_date());
-                    resultRecord.setCorrespondenceRecordNoteText(correspondenceRecord.getNote_text());
+                    CorrespondenceRecord[] correspondenceRecordList = correspondenceRecordRepository.findCorrespondenceRecordsById(record.getId());
+                    resultRecord.setCorrespondenceRecordList(correspondenceRecordList);
                     break;
 
                 case "Raw":
