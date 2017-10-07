@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.tools.classfile.Exceptions_attribute;
 import edu.syr.cyberseed.sage.server.entities.*;
 import edu.syr.cyberseed.sage.server.entities.models.*;
 import edu.syr.cyberseed.sage.server.repositories.*;
@@ -202,7 +203,7 @@ public class SMIRKMedicalRecords {
     }
 
 
-    // 5.8 /addDiagnosisRecord
+    // 5.10 /addDiagnosisRecord
     @Secured({"ROLE_DOCTOR"})
     @ApiOperation(value = "Add a Diagnosis Record to the database.",
             notes = "When addDiagnosisRecord is successfully exercised, the result SHALL be a new Diagnosis Record with valid non-null values added to the database. The addDiagnosisRecord service SHALL only be accessible to users with the Doctor role.")
@@ -348,7 +349,7 @@ public class SMIRKMedicalRecords {
 
 
     //starting test result record
-    // 5.8 /addTestResultRecord
+    // 5.9 /addTestResultRecord
     @Secured({"ROLE_DOCTOR","ROLE_NURSE","ROLE_MEDICAL_ADMIN"})
     @ApiOperation(value = "Add a Test Result MedicalRecord to the database.",
             notes = "When addTestResult MedicalRecord is successfully exercised, the result SHALL be a new Test Result MedicalRecord with valid non-null values added to the database.  The addTestResultRecord service SHALL only be accessible to users with the Doctor, Nurse, and Medical Administrator roles.")
@@ -496,7 +497,7 @@ public class SMIRKMedicalRecords {
 
 
     //starting insurance claim record
-    // 5.8 /addInsuranceClaimRecord
+    // 5.11 /addInsuranceClaimRecord
 
     @Secured({"ROLE_INSURANCE_ADMIN","ROLE_MEDICAL_ADMIN"})
     @ApiOperation(value = "Add a Insurance Record to the database.",
@@ -625,9 +626,9 @@ public class SMIRKMedicalRecords {
                             submittedData.getStatus(),
                             submittedData.getAmount()));
                     logger.info("Created  DiagnosisRecord with id " + savedInsuranceClaimRecord.getId());
-                   if(submittedData.getStatus()=="Filed" || submittedData.getStatus()=="Rejected" || submittedData.getStatus()=="Accepted" || submittedData.getStatus()=="Paid" || submittedData.getStatus()=="Examining") {
-                       resultString = "SUCCESS";
-                   }
+                    if(submittedData.getStatus()=="Filed" || submittedData.getStatus()=="Rejected" || submittedData.getStatus()=="Accepted" || submittedData.getStatus()=="Paid" || submittedData.getStatus()=="Examining") {
+                        resultString = "SUCCESS";
+                    }
                 } catch (Exception e) {
                     logger.error("Failure creating diagnosis record");
                     e.printStackTrace();
@@ -643,6 +644,154 @@ public class SMIRKMedicalRecords {
         return result;
     }
     //ending insurance claim record
+
+    // 5.12 /addRawRecord
+    @Secured({"ROLE_USER"})
+    @ApiOperation(value = "Add a Raw Claim to the database.",
+            notes = "When addRawRecord is successfully exercised, the result SHALL be a new Raw Record with valid non-null values added to the database. The addRawRecord service SHALL be accessible to all users. \n")
+    @RequestMapping(value = "/addRawRecord", method = RequestMethod.POST)
+    public ResultValue addRawRecord(@RequestBody @Valid RawRecordModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /addRawRecord");
+        String resultString = "FAILURE";
+
+        byte[] fileAsBytes = null;
+        // Was the user supplied file actually base64 encoded data?
+        try {
+            fileAsBytes = Base64.getDecoder().decode(submittedData.getBase64EncodedBinary());
+        }
+        catch (Exception e) {
+            logger.warn("Authenticated user " + currentUser + " submitted an invalid base64 encoded file, Raw Record was not created");
+            e.printStackTrace();
+            ResultValue result = new ResultValue();
+            result.setResult(resultString);
+            logger.info("Authenticated user " + currentUser + " completed execution of service /addRawRecord");
+            return result;
+        }
+        Integer fileByteLength = fileAsBytes.length;
+
+        //Check if API user specified supplemental users for edit or view permission
+        Boolean editUsersSubmitted = ((submittedData.getEdit() != null) && (submittedData.getEdit().size() > 0)) ? true : false;
+        Boolean viewUsersSubmitted = ((submittedData.getView() != null) && (submittedData.getView().size() > 0)) ? true : false;
+
+        // create a json object of the default edit users
+        ArrayList<String> editUserList = new ArrayList<String>();
+        // by default do not add any users
+        //editUserList.add(currentUser);
+        Map<String, Object> editUserListJson = new HashMap<String, Object>();
+
+
+        // create a json object of the default view users
+        ArrayList<String> viewUserList = new ArrayList<String>();
+        // by default do not add any users
+        //viewUserList.add(currentUser);
+        //viewUserList.add(submittedData.getPatientUsername());
+        Map<String, Object> viewUserListJson = new HashMap<String, Object>();
+
+
+        String finalEditPermissions = "";
+        String finalViewPermissions = "";
+
+        if (editUsersSubmitted) {
+            List<String> userSuppliedListOfUsersToGrantEdit = submittedData.getEdit();
+            for (String username : userSuppliedListOfUsersToGrantEdit) {
+                User possibleUser = userRepository.findByUsername(username);
+                if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                    editUserList.add(username);
+                }
+            }
+            editUserListJson.put("users", editUserList);
+            JSONSerializer serializer = new JSONSerializer();
+            finalEditPermissions = serializer.include("users").serialize(editUserListJson);
+        }
+        else {
+            editUserListJson.put("users", editUserList);
+            JSONSerializer serializer = new JSONSerializer();
+            finalEditPermissions = serializer.include("users").serialize(editUserListJson);
+        }
+
+        if (viewUsersSubmitted) {
+            List<String> userSuppliedListOfUsersToGrantView = submittedData.getView();
+            for (String username : userSuppliedListOfUsersToGrantView) {
+                User possibleUser = userRepository.findByUsername(username);
+                if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                    viewUserList.add(username);
+                }
+            }
+            viewUserListJson.put("users", viewUserList);
+            JSONSerializer serializer = new JSONSerializer();
+            finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
+        }
+        else {
+            viewUserListJson.put("users", viewUserList);
+            JSONSerializer serializer = new JSONSerializer();
+            finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
+        }
+
+        // was a record id specified?
+        logger.info("Submitted record id is " + submittedData.getId());
+        if (submittedData.getId() != null) {
+            MedicalRecord possibleExistingRecord = medicalRecordRepository.findById(submittedData.getId());
+            RawRecord possibleExistingRawRecord = rawRecordRepository.findById(submittedData.getId());
+            Boolean recordExists = (possibleExistingRecord != null) ? true : false;
+            Boolean rawRecordExists = (possibleExistingRawRecord != null) ? true : false;
+
+            if (recordExists || rawRecordExists) {
+                logger.error("Cannot create raw record due to recordExists=" + recordExists + " and rawRecordExists=" + rawRecordExists
+                        + ". You cannot create *new* records with a specific id if records already exist with that id.");
+            }
+            else {
+                logger.info("Creating records with id " + submittedData.getId());
+                MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
+                        "Raw",
+                        new Date(),
+                        currentUser,
+                        submittedData.getPatientUsername(),
+                        finalEditPermissions,
+                        finalViewPermissions));
+                logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                // create the raw record
+                RawRecord savedRawRecord = rawRecordRepository.save(new RawRecord(submittedData.getId(),
+                        submittedData.getDescription(),
+                        fileAsBytes,
+                        fileByteLength));
+                logger.info("Created RawRecord with id " + savedRawRecord.getId());
+                resultString = "SUCCESS";
+            }
+        }
+        else {
+            try {
+                // create the record
+                MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Raw",
+                        new Date(),
+                        currentUser,
+                        submittedData.getPatientUsername(),
+                        finalEditPermissions,
+                        finalViewPermissions));
+                logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
+
+                // create the raw record
+                // Use id auto assigned by db to MedicalRecord for rawRecord
+                RawRecord savedRawRecord = rawRecordRepository.save(new RawRecord(savedMedicalRecord.getId(),
+                        submittedData.getDescription(),
+                        fileAsBytes,
+                        fileByteLength));
+                logger.info("Created RawRecord with id " + savedRawRecord.getId());
+
+
+                resultString = "SUCCESS";
+                logger.info("Created raw record for patient " + submittedData.getPatientUsername());
+            } catch (Exception e) {
+                logger.error("Failure creating raw record for patient " + submittedData.getPatientUsername());
+                e.printStackTrace();
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /addRawRecord");
+        return result;
+    }
 
     // 5.15 /listRecords
     @Secured({"ROLE_USER"})
@@ -793,8 +942,11 @@ public class SMIRKMedicalRecords {
                 case "Raw":
                     // set return values for RawRecord
                     RawRecord rawRecord = rawRecordRepository.findById(record.getId());
-                    resultRecord.setRawRecordDate(rawRecord.getDate());
                     resultRecord.setRawRecordDescription(rawRecord.getDescription());
+                    byte[] fileAsBytes = rawRecord.getFile();
+                    byte[] trimmedFileAsBytes = Arrays.copyOfRange(fileAsBytes, 0, (rawRecord.getLength() -1));
+                    //byte[] trimmedFileAsBytes = new String(fileAsBytes).replaceAll("\0", "").getBytes();
+                    resultRecord.setRawRecordBase64EncodedBinary(Base64.getEncoder().encodeToString(trimmedFileAsBytes));
                     break;
 
                 default:

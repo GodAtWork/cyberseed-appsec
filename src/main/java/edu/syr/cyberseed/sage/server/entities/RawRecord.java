@@ -26,14 +26,27 @@ import java.util.Date;
 public class RawRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private Integer id;
     
     @Column(name = "description")
     private String description;
     
-      @Column(name = "date")
-    private Date date;
+    @Column(name = "file", nullable = false, columnDefinition = "BINARY(255)", length = 255)
+    private byte[] file;
 
+    @Column(name = "length")
+    private Integer length;
+
+    protected RawRecord() {
+
+    }
+
+    public RawRecord (Integer id, String description, byte[] file, Integer length) {
+        this.id = id;
+        this.description = description;
+        this.file = file;
+        this.length = length;
+
+    }
 }
