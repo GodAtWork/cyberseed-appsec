@@ -896,7 +896,7 @@ public class SMIRKMedicalRecords {
                 else {
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
-                            "Patient Doctor Correspondence",
+                            "Patient Doctor Correspondence Record",
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -915,7 +915,7 @@ public class SMIRKMedicalRecords {
             else {
                 try {
                     // create the record
-                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Patient Doctor Correspondence",
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Patient Doctor Correspondence Record",
                             new Date(),
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -1135,7 +1135,7 @@ public class SMIRKMedicalRecords {
                     resultRecord.setInsuranceClaimRecordClaimAmount(insuranceClaimRecord.getAmount());
 
                     break;
-                case "Patient Doctor Correspondence":
+                case "Patient Doctor Correspondence Record":
                     // set return values for CorrespondenceRecord
                     CorrespondenceRecord[] correspondenceRecordList = correspondenceRecordRepository.findCorrespondenceRecordsById(record.getId());
                     resultRecord.setCorrespondenceRecordList(correspondenceRecordList);
