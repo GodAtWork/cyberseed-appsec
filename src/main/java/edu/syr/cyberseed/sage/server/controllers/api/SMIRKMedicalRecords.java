@@ -1110,6 +1110,70 @@ public class SMIRKMedicalRecords {
     }
 
     // 5.17 editRecordPerm
-    // todo
+    @Secured({"ROLE_ASSIGN_PERMISSIONS"})
+    @ApiOperation(value = "Edit a record’s permissions.",
+            notes = "When editRecordPerm is successfully exercised, either a record’s Edit Permissions or View Permissions list fields SHALL be changed. The editRecordPerm service SHALL only change permissions to the record specified in the call to the service. The editRecordPerm service SHALL only change permissions if the calling user is listed in the records Edit Permissions list field or has Edit Record Access permissions.")
+    @RequestMapping(value = "/editRecordPerm", method = RequestMethod.POST)
+    public ResultValue editRecordPerm(@RequestBody @Valid CustomRecordPermissionsModel submittedData) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Authenticated user " + currentUser + " is starting execution of service /editRecordPerm");
+        String resultString = "FAILURE";
+
+        MedicalRecord medRecord = medicalRecordRepository.findById(submittedData.getId());
+        Boolean recordExists = ((medRecord !=null) && (medRecord.getId().equals(submittedData.getId()))) ? true : false;
+
+        if (recordExists) {
+
+            Boolean editListProvided = ( (submittedData.getEditors() != null) && submittedData.getEditors().size() > 0) ? true : false;
+            Boolean viewListProvided = ( (submittedData.getViewers() != null) && submittedData.getViewers().size() > 0) ? true : false;
+            String finalEditPermissions = "";
+            String finalViewPermissions = "";
+
+            if (editListProvided) {
+                // verify these users exist and if so then replace the edit list with this list
+                List<String> userSuppliedListOfUsersToGrantEdit = submittedData.getEditors();
+                ArrayList<String> editUserList = new ArrayList<String>();
+                Map<String, Object> editUserListJson = new HashMap<String, Object>();
+                for (String username : userSuppliedListOfUsersToGrantEdit) {
+                    User possibleUser = userRepository.findByUsername(username);
+                    if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                        editUserList.add(username);
+                    }
+                }
+                editUserListJson.put("users", editUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalEditPermissions = serializer.include("users").serialize(editUserListJson);
+                medRecord.setEdit(finalEditPermissions);
+            }
+
+            if (viewListProvided) {
+                // verify these users exist and if so then replace the view list with this list
+                List<String> userSuppliedListOfUsersToGrantView = submittedData.getViewers();
+                ArrayList<String> viewUserList = new ArrayList<String>();
+                Map<String, Object> viewUserListJson = new HashMap<String, Object>();
+                for (String username : userSuppliedListOfUsersToGrantView) {
+                    User possibleUser = userRepository.findByUsername(username);
+                    if ((possibleUser != null) && (StringUtils.isNotEmpty(possibleUser.getUsername()))) {
+                        viewUserList.add(username);
+                    }
+                }
+                viewUserListJson.put("users", viewUserList);
+                JSONSerializer serializer = new JSONSerializer();
+                finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
+                medRecord.setView(finalViewPermissions);
+            }
+
+            if (editListProvided || viewListProvided) {
+                MedicalRecord savedMedicalRecord = medicalRecordRepository.save(medRecord);
+                logger.info("Authenticated user " + currentUser + " updated permissions on record " + savedMedicalRecord.getId());
+                resultString = "SUCCESS";
+            }
+        }
+        ResultValue result = new ResultValue();
+        result.setResult(resultString);
+        logger.info("Authenticated user " + currentUser + " completed execution of service /editRecordPerm");
+        return result;
+    }
+
 
 }
