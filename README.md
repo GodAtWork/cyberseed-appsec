@@ -19,9 +19,9 @@
 - [x] /addDoctorExamRecord	
 - [x] /addTestResultRecord	
 - [x] /addDiagnosisRecord	
-- [ ] /addInsuranceClaimRecord	
-- [ ] /addRawRecord	
-- [ ] /createCorrespondenceRecord	
+- [x] /addInsuranceClaimRecord	
+- [x] /addRawRecord	
+- [x] /createCorrespondenceRecord	
 - [ ] /addCorrespondenceNote	
 - [x] /listRecords	
 - [x] /viewRecord	
@@ -53,15 +53,15 @@
 - [ ] Add test 12
 - [ ] Add test 13
 - [ ] Add test 14
-- [ ] Add test 15
+- [x] Add test 15
 - [ ] Add test 16
 - [ ] Add test 17
 - [ ] Add test 18
 - [ ] Add test 19
 - [ ] Add test 20
 - [ ] Add test 21
-- [ ] Add test 22
-- [ ] Add test 23
+- [x] Add test 22
+- [x] Add test 23
 - [ ] Add test 24
 - [ ] Add test 25
 - [ ] Add test 26
