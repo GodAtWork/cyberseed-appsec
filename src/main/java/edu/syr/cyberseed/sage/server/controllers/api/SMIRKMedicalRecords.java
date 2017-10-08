@@ -157,7 +157,7 @@ public class SMIRKMedicalRecords {
                     }
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
-                            "Doctor Exam",
+                            "Doctor Exam Record",
                             res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -183,7 +183,7 @@ public class SMIRKMedicalRecords {
                         res_date = submittedData.getDate();
                     }
                     // create the record
-                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam Record",
                             res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -316,7 +316,7 @@ public class SMIRKMedicalRecords {
                     }
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
-                            "Test Result",
+                            "Test Result Record",
                             res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -343,7 +343,7 @@ public class SMIRKMedicalRecords {
                         res_date = submittedData.getDate();
                     }
                     // create the record
-                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Test Result",
+                    MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Test Result Record",
                             res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
@@ -567,7 +567,6 @@ public class SMIRKMedicalRecords {
             // create a json object of the default view users
             ArrayList<String> viewUserList = new ArrayList<String>();
             viewUserList.add(currentUser);
-            viewUserList.add(submittedData.getPatientUsername());
             Map<String, Object> viewUserListJson = new HashMap<String, Object>();
 
 
@@ -632,7 +631,7 @@ public class SMIRKMedicalRecords {
                     if(submittedData.getStatus().equals("Filed") || submittedData.getStatus().equals("Rejected") || submittedData.getStatus().equals("Examining") || submittedData.getStatus().equals("Paid") || submittedData.getStatus().equals("Accepted")) {
                         logger.info("Creating records with id " + submittedData.getId());
                         MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
-                                "Insurance Claim",
+                                "Insurance Claim Record",
                                 res_date,
                                 currentUser,
                                 submittedData.getPatientUsername(),
@@ -663,7 +662,7 @@ public class SMIRKMedicalRecords {
                     }
                     if(submittedData.getStatus().equals("Filed") || submittedData.getStatus().equals("Rejected") || submittedData.getStatus().equals("Examining") || submittedData.getStatus().equals("Paid") || submittedData.getStatus().equals("Accepted")) {
                         // create the record
-                        MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Insurance Claim",
+                        MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Insurance Claim Record",
                                 res_date,
                                 currentUser,
                                 submittedData.getPatientUsername(),
@@ -1165,7 +1164,7 @@ public class SMIRKMedicalRecords {
             // set return values that are dependent on record subtype
             String recordSubType = record.getRecord_type();
             switch (recordSubType) {
-                case "Doctor Exam":
+                case "Doctor Exam Record":
                     // set return values for DoctorExamRecord
                     DoctorExamRecord doctorExamRecord = doctorExamRecordRepository.findById(record.getId());
                     if (doctorExamRecord != null) {
@@ -1175,7 +1174,7 @@ public class SMIRKMedicalRecords {
                     }
                     break;
 
-                case "Test Result":
+                case "Test Result Record":
                     // set return values for TestResultRecord
                     TestResultRecord testResultRecord = testResultRecordRepository.findById(record.getId());
                     if (testResultRecord != null) {
@@ -1196,7 +1195,7 @@ public class SMIRKMedicalRecords {
                     resultRecord.setDiagnosisRecordDiagnosis(diagnosisRecord.getDiagnosis());
                     break;
 
-                case "Insurance Claim":
+                case "Insurance Claim Record":
                     // set return values for InsuranceClaimRecord
                     InsuranceClaimRecord insuranceClaimRecord = insuranceClaimRecordRepository.findById(record.getId());
                     resultRecord.setInsuranceClaimRecordMadmin(insuranceClaimRecord.getMadmin());
