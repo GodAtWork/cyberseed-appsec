@@ -76,18 +76,17 @@ public class SMIRKUsersController {
             JSONSerializer serializer = new JSONSerializer();
             roles = serializer.include("roles").serialize(rolesJson);
 
-            String a="[\"ROLE_NONE\"]";
             logger.info("Adding user " + submittedData.getUsername() + " with roles " + roles);
             try {
                 // create the User record
-                // create the Patient record
-                userRepository.save(Arrays.asList(new User(submittedData.getUsername(),
+                userRepository.save(new User(submittedData.getUsername(),
                         submittedData.getPassword(),
                         submittedData.getFname(),
                         submittedData.getLname(),
                         roles,
-                        a,
-                        null)));
+                        null,
+                        null));
+                // create the Patient record
                 patientRepository.save(Arrays.asList(new Patient(submittedData.getUsername(), submittedData.getDob(), submittedData.getSsn(), submittedData.getAddress())));
                 resultString = "SUCCESS";
                 logger.info("Created patient user " + submittedData.getUsername());
@@ -762,9 +761,9 @@ public class SMIRKUsersController {
     //ending edit InsAdmin
 
     // 5.24 /viewPatientProfile
-    @Secured({"ROLE_INSURANCE_ADMIN","ROLE_MEDICAL_ADMIN"})
+    @Secured({"ROLE_VIEW_PII"})
     @ApiOperation(value = "View a patient.",
-            notes = "When viewRecord service is successfully exercised the server application SHALL return the record corresponding to the record ID requested in the service call. The viewRecord service SHALL only return the record if the accessing user is listed on the records view permissions list or is the record owner. The viewRecord service SHALL only return a Diagnosis Record if the accessing user has Doctor Role.")
+            notes = "When viewPatientProfile service is successfully exercised the server application SHALL return the patient user profile corresponding to the patient username requested in the service call. The viewPatientProfile service SHALL only return the profile if the accessing user has View PII permission. The viewPatientProfile service SHALL only return patient user profiles types.  \n")
     @RequestMapping(value = "/viewPatientProfile/{submittedUsername}", method = RequestMethod.GET)
     public ArrayList<String> viewPatient(@PathVariable String submittedUsername) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -782,7 +781,6 @@ public class SMIRKUsersController {
             User record = userRepository.findByUsername(submittedUsername);
             Patient precord = patientRepository.findByUsername(submittedUsername);
             // parse the list of viewers stored in the db as a json list to a java arraylist
-            logger.info("Authenticated user " + currentUser + " completed execution of service /viewPatient");
             recordList.add(record.getUsername());
             recordList.add(record.getFname());
             recordList.add(record.getLname());
@@ -796,6 +794,7 @@ public class SMIRKUsersController {
             recordList.add("FAILURE");
             logger.info("Given user " + submittedUsername + " is not a patient");
         }
+        logger.info("Authenticated user " + currentUser + " completed execution of service /viewPatient");
         return recordList;
     }
 

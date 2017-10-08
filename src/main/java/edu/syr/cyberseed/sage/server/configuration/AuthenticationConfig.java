@@ -1,6 +1,5 @@
 package edu.syr.cyberseed.sage.server.configuration;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,11 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled=true)
 public class AuthenticationConfig extends WebMvcConfigurerAdapter {
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/login").setViewName("login");
-    }
 
     @Bean
     public ApplicationSecurity applicationSecurity() {
@@ -56,7 +50,7 @@ public class AuthenticationConfig extends WebMvcConfigurerAdapter {
                     .antMatchers("/createCorrespondenceRecord").access("hasAnyRole('ROLE_DOCTOR','ROLE_PATIENT')")
                     .antMatchers("/addCorrespondenceNote").access("hasAnyRole('ROLE_DOCTOR','ROLE_PATIENT')")
                     .antMatchers("/listRecords").access("hasRole('ROLE_USER')")
-                    .antMatchers("/viewRecord").access("hasRole('ROLE_DOCTOR')")
+                    .antMatchers("/viewRecord").access("hasRole('ROLE_USER')")
                     .antMatchers("/editRecordPerm").access("hasRole('ROLE_USER')")
                     .antMatchers("/editPatient").access("hasRole('ROLE_EDIT_PATIENT')")
                     .antMatchers("/editDoctor").access("hasRole('ROLE_EDIT_DOCTOR')")
