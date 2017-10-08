@@ -1,37 +1,56 @@
 package edu.syr.cyberseed.sage.server.controllers.api;
 
-import edu.syr.cyberseed.sage.server.entities.BackupConfig;
-import edu.syr.cyberseed.sage.server.entities.ResultValue;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.syr.cyberseed.sage.server.entities.*;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.*;
+import java.util.*;
+
+
 
 @RestController
 public class SMIRKAdministrationController {
-
+    String filename="";
+    String ip="";
+    String user="";
+    String pass="";
     private static final Logger logger = LoggerFactory.getLogger(SMIRKAdministrationController.class);
 
     @Secured({"ROLE_SYSTEM_ADMIN"})
     @RequestMapping(value = "/loadBackupCfg", method = RequestMethod.POST)
-    public ResultValue loadBackupCfg(@RequestBody @Valid BackupConfig submittedData) {
+    public ResultValue loadBackupCfg(@RequestBody @Valid BackupConfig submittedData) throws FileNotFoundException, UnsupportedEncodingException {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("Authenticated user " + currentUser + " is starting execution of service /loadBackupCfg");
         String resultString = "FAILURE";
 
-        String ip = submittedData.getOffsiteServerIp();
-        String user = submittedData.getOffsiteServerUsername();
-        String pass = submittedData.getOffsiteServerPassword();
+        ip = submittedData.getOffsiteServerIp();
+        user = submittedData.getOffsiteServerUsername();
+        pass = submittedData.getOffsiteServerPassword();
+        filename = submittedData.getOffsiteServerFilename();
 
         //TODO
-        // write the three submittedData fields to a file on the the app server
-
+        logger.info("Authenticated user " + ip + " completed execution of service /loadBackupCfg");
+        logger.info("Authenticated user " + user + " completed execution of service /loadBackupCfg");
+        logger.info("Authenticated user " + pass + " completed execution of service /loadBackupCfg");
+        logger.info("Authenticated user " + filename + " completed execution of service /loadBackupCfg");
+        PrintWriter writer = new PrintWriter(filename, "UTF-8");
+        writer.println(ip);
+        writer.println(user);
+        writer.println(pass);
+        writer.close();
         ResultValue result = new ResultValue();
         result.setResult(resultString);
         logger.info("Authenticated user " + currentUser + " completed execution of service /loadBackupCfg");
@@ -39,22 +58,36 @@ public class SMIRKAdministrationController {
     }
 
     @Secured({"ROLE_SYSTEM_ADMIN"})
-    @RequestMapping(value = "/getBackupCfg", method = RequestMethod.GET)
-    public BackupConfig getBackupCfg() {
+    @RequestMapping(value = "/getBackupCfg/{submittedId}", method = RequestMethod.GET)
+    public BackupConfig viewRecord(@PathVariable String submittedId) {
+
+        submittedId=submittedId+".cfg";
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        logger.info("Authenticated user " + currentUser + " is starting execution of service /getBackupCfg");
+        BackupConfig resultRecord = new BackupConfig();
 
-        BackupConfig config = new BackupConfig();
+        // first find the base MedicalRecord
+        BackupConfig record = new BackupConfig();
+        String owner = filename;
+        logger.info("Owner of MedicalRecord " + submittedId + " is " + owner);
 
-        //TODO
-        // read three config data values from config file on app server
 
-        //config.setOffsiteServerIp(ffff);
-        //config.setOffsiteServerPassword(ffff);
-        //config.setOffsiteServerUsername(ffff);
+        // check if currentuser is the owner or is in the view list
+        if (submittedId.equals(filename)) {
 
-        logger.info("Authenticated user " + currentUser + " completed execution of service /getBackupCfg");
-        return config;
+            resultRecord.setAnswer("yes");
+            resultRecord.setOffsiteServerUsername(user);
+            resultRecord.setOffsiteServerPassword(pass);
+            resultRecord.setOffsiteServerIp(ip);
+            logger.info("setting yes ");
+
+        }
+        else {
+            resultRecord.setAnswer("no");
+            logger.info("setting no ");
+        }
+
+        logger.info("done");
+        return resultRecord;
     }
 
 }

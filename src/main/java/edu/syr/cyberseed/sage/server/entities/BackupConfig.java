@@ -17,7 +17,14 @@ public class BackupConfig {
     private String offsiteServerUsername;
 
     @NotNull
-    @Size(min = 15, max = 255)
+    @Size(min = 1, max = 255)
     private String offsiteServerPassword;
+
+    @NotNull
+    @Size(min = 1, max = 255)
+    private String offsiteServerFilename;
+
+    @Size(min = 1, max = 255)
+    private String answer;
 
 }
