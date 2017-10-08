@@ -1234,7 +1234,8 @@ public class SMIRKMedicalRecords {
     }
 
     // 5.17 editRecordPerm
-    @Secured({"ROLE_ASSIGN_PERMISSIONS"})
+    // Allowed to those with ROLE_ASSIGN_PERMISSIONS or explicit edit permissions on this record.
+    @Secured({"ROLE_USER"})
     @ApiOperation(value = "Edit a record’s permissions.",
             notes = "When editRecordPerm is successfully exercised, either a record’s Edit Permissions or View Permissions list fields SHALL be changed. The editRecordPerm service SHALL only change permissions to the record specified in the call to the service. The editRecordPerm service SHALL only change permissions if the calling user is listed in the records Edit Permissions list field or has Edit Record Access permissions.")
     @RequestMapping(value = "/editRecordPerm", method = RequestMethod.POST)
@@ -1243,10 +1244,47 @@ public class SMIRKMedicalRecords {
         logger.info("Authenticated user " + currentUser + " is starting execution of service /editRecordPerm");
         String resultString = "FAILURE";
 
+        boolean currentUserHasAssignPermissionsRole = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ASSIGN_PERMISSIONS"));
         MedicalRecord medRecord = medicalRecordRepository.findById(submittedData.getId());
         Boolean recordExists = ((medRecord !=null) && (medRecord.getId().equals(submittedData.getId()))) ? true : false;
-
+        Boolean currentUserHasEditPermissionsToThisRecord = false;
+        // check the explicit edit permissions on this record
         if (recordExists) {
+            // Determine the listOfUsersThatHaveEditPermissionsToThisRecord
+            // parse the list of viewers stored in the db as a json list to a java arraylist
+            String editorsJsonList = medRecord.getEdit();
+            List<String> listOfUsersThatHaveEditPermissionsToThisRecord = new ArrayList<String>();
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> mapObject = mapper.readValue(editorsJsonList,
+                        new TypeReference<Map<String, Object>>() {
+                        });
+                listOfUsersThatHaveEditPermissionsToThisRecord = (List<String>) mapObject.get("users");
+            }
+            catch (JsonGenerationException e) {
+                e.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for (String editor : listOfUsersThatHaveEditPermissionsToThisRecord) {
+                logger.info("record " + submittedData.getId() + " editors include " + editor);
+            }
+            if (listOfUsersThatHaveEditPermissionsToThisRecord.contains(currentUser)) {
+                currentUserHasEditPermissionsToThisRecord = true;
+                logger.info("set to currentUserHasEditPermissionsToThisRecord to true");
+            }
+        }
+        else {
+            logger.info("record " + submittedData.getId() + " does not exit.");
+        }
+        //If either the user is has ROLE_ASSIGN_PERMISSIONS (ie. is a SYS ADMIN) OR has edit permissions to this record then they can edit it.
+        //Integration test 24 requires an Insurance Admin (who does not have ROLE_ASSIGN_PERMISSIONS) to use /editRecordPerm
+        Boolean allowToEdit = (currentUserHasAssignPermissionsRole || currentUserHasEditPermissionsToThisRecord) ? true : false;
+        if (recordExists && allowToEdit) {
 
             Boolean editListProvided = ( (submittedData.getEditors() != null) && submittedData.getEditors().size() > 0) ? true : false;
             Boolean viewListProvided = ( (submittedData.getViewers() != null) && submittedData.getViewers().size() > 0) ? true : false;
@@ -1269,6 +1307,9 @@ public class SMIRKMedicalRecords {
                 finalEditPermissions = serializer.include("users").serialize(editUserListJson);
                 medRecord.setEdit(finalEditPermissions);
             }
+            else {
+                logger.info("editListProvided = false");
+            }
 
             if (viewListProvided) {
                 // verify these users exist and if so then replace the view list with this list
@@ -1286,12 +1327,18 @@ public class SMIRKMedicalRecords {
                 finalViewPermissions = serializer.include("users").serialize(viewUserListJson);
                 medRecord.setView(finalViewPermissions);
             }
+            else {
+                logger.info("editListProvided = false");
+            }
 
             if (editListProvided || viewListProvided) {
                 MedicalRecord savedMedicalRecord = medicalRecordRepository.save(medRecord);
                 logger.info("Authenticated user " + currentUser + " updated permissions on record " + savedMedicalRecord.getId());
                 resultString = "SUCCESS";
             }
+        }
+        else {
+            logger.info("allowToEdit is false");
         }
         ResultValue result = new ResultValue();
         result.setResult(resultString);
