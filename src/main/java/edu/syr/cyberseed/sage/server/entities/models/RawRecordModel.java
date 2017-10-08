@@ -17,6 +17,8 @@ public class RawRecordModel {
     @Range(min = 1l, max=999999999)
     private Integer id;
 
+    private Date date;
+
     @NotNull
     @Size(min = 1, max = 255)
     @Pattern(regexp = "^[A-Za-z0-9]*$")

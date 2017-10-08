@@ -21,6 +21,8 @@ public class DoctorExamRecordModel {
     @NotNull
     private Date examDate;
 
+    private Date date;
+
     @NotNull
     @Size(min = 1, max = 255)
     @Pattern(regexp = "^[A-Za-z0-9]*$")

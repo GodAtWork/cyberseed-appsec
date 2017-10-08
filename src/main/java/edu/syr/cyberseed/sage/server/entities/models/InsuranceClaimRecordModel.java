@@ -20,6 +20,8 @@ public class InsuranceClaimRecordModel {
     @NotNull
     private Date date;
 
+    private Date ins_date;
+
     @NotNull
     @Size(min = 1, max = 255)
     @Pattern(regexp = "^[A-Za-z0-9]*$")

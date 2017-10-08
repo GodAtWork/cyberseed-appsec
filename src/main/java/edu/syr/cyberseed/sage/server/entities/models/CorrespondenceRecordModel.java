@@ -33,6 +33,8 @@ public class CorrespondenceRecordModel {
 
     private Date note_date;
 
+    private Date date;
+
     // optional
     private List<String> edit;
 

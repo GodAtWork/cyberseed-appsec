@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -148,10 +149,16 @@ public class SMIRKMedicalRecords {
                             + ". You cannot create *new* records with a specific id if records already exist with that id.");
                 }
                 else {
+                    Date res_date;
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
                             "Doctor Exam",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
@@ -169,9 +176,15 @@ public class SMIRKMedicalRecords {
             }
             else {
                 try {
+                    Date res_date;
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     // create the record
                     MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Doctor Exam",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
@@ -482,7 +495,6 @@ public class SMIRKMedicalRecords {
             else {
                 try {
                     Date res_date;
-
                     if(submittedData.getDate() == null){
                         res_date = new Date();
                     }else{
@@ -611,11 +623,17 @@ public class SMIRKMedicalRecords {
                             + ". You cannot create *new* records with a specific id if records already exist with that id.");
                 }
                 else {
+                    Date res_date;
+                    if(submittedData.getIns_date() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getIns_date();
+                    }
                     if(submittedData.getStatus().equals("Filed") || submittedData.getStatus().equals("Rejected") || submittedData.getStatus().equals("Examining") || submittedData.getStatus().equals("Paid") || submittedData.getStatus().equals("Accepted")) {
                         logger.info("Creating records with id " + submittedData.getId());
                         MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
                                 "Insurance Claim",
-                                new Date(),
+                                res_date,
                                 currentUser,
                                 submittedData.getPatientUsername(),
                                 finalEditPermissions,
@@ -637,10 +655,16 @@ public class SMIRKMedicalRecords {
             }
             else {
                 try {
+                    Date res_date;
+                    if(submittedData.getIns_date() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getIns_date();
+                    }
                     if(submittedData.getStatus().equals("Filed") || submittedData.getStatus().equals("Rejected") || submittedData.getStatus().equals("Examining") || submittedData.getStatus().equals("Paid") || submittedData.getStatus().equals("Accepted")) {
                         // create the record
                         MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Insurance Claim",
-                                new Date(),
+                                res_date,
                                 currentUser,
                                 submittedData.getPatientUsername(),
                                 finalEditPermissions,
@@ -777,10 +801,16 @@ public class SMIRKMedicalRecords {
                         + ". You cannot create *new* records with a specific id if records already exist with that id.");
             }
             else {
+                Date res_date;
+                if(submittedData.getDate() == null){
+                    res_date = new Date();
+                }else{
+                    res_date = submittedData.getDate();
+                }
                 logger.info("Creating records with id " + submittedData.getId());
                 MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
                         "Raw",
-                        new Date(),
+                        res_date,
                         currentUser,
                         submittedData.getPatientUsername(),
                         finalEditPermissions,
@@ -798,9 +828,15 @@ public class SMIRKMedicalRecords {
         }
         else {
             try {
+                Date res_date;
+                if(submittedData.getDate() == null){
+                    res_date = new Date();
+                }else{
+                    res_date = submittedData.getDate();
+                }
                 // create the record
                 MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Raw",
-                        new Date(),
+                        res_date,
                         currentUser,
                         submittedData.getPatientUsername(),
                         finalEditPermissions,
@@ -916,10 +952,16 @@ public class SMIRKMedicalRecords {
                             + ". You cannot create *new* records with a specific id if records already exist with that id.");
                 }
                 else {
+                    Date res_date;
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     logger.info("Creating records with id " + submittedData.getId());
                     MedicalRecordWithoutAutoId savedMedicalRecord = medicalRecordWithoutAutoIdRepository.save(new MedicalRecordWithoutAutoId(submittedData.getId(),
                             "Patient Doctor Correspondence Record",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
@@ -936,9 +978,15 @@ public class SMIRKMedicalRecords {
             }
             else {
                 try {
+                    Date res_date;
+                    if(submittedData.getDate() == null){
+                        res_date = new Date();
+                    }else{
+                        res_date = submittedData.getDate();
+                    }
                     // create the record
                     MedicalRecord savedMedicalRecord = medicalRecordRepository.save(new MedicalRecord("Patient Doctor Correspondence Record",
-                            new Date(),
+                            res_date,
                             currentUser,
                             submittedData.getPatientUsername(),
                             finalEditPermissions,
