@@ -20,8 +20,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 --  Table structure for `doctor`
 -- ----------------------------
-DROP TABLE IF EXISTS `doctor`;
-CREATE TABLE `doctor` (
+--DROP TABLE IF EXISTS `doctor`;
+CREATE TABLE IF NOT EXISTS `doctor` (
   `username` varchar(255) NOT NULL,
   `pname` varchar(255) NOT NULL,
   `paddress` varchar(255) NOT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE `doctor` (
 -- ----------------------------
 --  Table structure for `insurance_admin`
 -- ----------------------------
-DROP TABLE IF EXISTS `insurance_admin`;
-CREATE TABLE `insurance_admin` (
+--DROP TABLE IF EXISTS `insurance_admin`;
+CREATE TABLE IF NOT EXISTS `insurance_admin` (
   `username` varchar(255) NOT NULL,
   `cname` varchar(255) NOT NULL,
   `caddress` varchar(255) NOT NULL,
@@ -45,26 +45,22 @@ CREATE TABLE `insurance_admin` (
 -- ----------------------------
 --  Table structure for `medical_admin`
 -- ----------------------------
-DROP TABLE IF EXISTS `medical_admin`;
-CREATE TABLE `medical_admin` (
+--DROP TABLE IF EXISTS `medical_admin`;
+CREATE TABLE IF NOT EXISTS `medical_admin` (
   `username` varchar(255) NOT NULL,
   `pname` varchar(255) NOT NULL,
   `paddress` varchar(255) NOT NULL,
   `adoctor` varchar(255) NOT NULL,
   `anurse` varchar(255) NOT NULL,
   PRIMARY KEY (`username`),
-  KEY `FK_medical_admin_user_2` (`anurse`),
-  KEY `FK_medical_admin_user_3` (`adoctor`),
-  CONSTRAINT `FK_medical_admin_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_medical_admin_user_2` FOREIGN KEY (`anurse`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_medical_admin_user_3` FOREIGN KEY (`adoctor`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_medical_admin_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `nurse`
 -- ----------------------------
-DROP TABLE IF EXISTS `nurse`;
-CREATE TABLE `nurse` (
+--DROP TABLE IF EXISTS `nurse`;
+CREATE TABLE IF NOT EXISTS `nurse` (
   `username` varchar(255) NOT NULL,
   `pname` varchar(255) NOT NULL,
   `paddress` varchar(255) NOT NULL,
@@ -76,8 +72,8 @@ CREATE TABLE `nurse` (
 -- ----------------------------
 --  Table structure for `patient`
 -- ----------------------------
-DROP TABLE IF EXISTS `patient`;
-CREATE TABLE `patient` (
+--DROP TABLE IF EXISTS `patient`;
+CREATE TABLE IF NOT EXISTS `patient` (
   `username` varchar(255) NOT NULL,
   `dob` date NOT NULL,
   `ssn` int(9) NOT NULL,
@@ -89,8 +85,8 @@ CREATE TABLE `patient` (
 -- ----------------------------
 --  Table structure for `record`
 -- ----------------------------
-DROP TABLE IF EXISTS `record`;
-CREATE TABLE `record` (
+--DROP TABLE IF EXISTS `record`;
+CREATE TABLE IF NOT EXISTS `record` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
   `record_type` char(255) NOT NULL,
   `edit` varchar(255) NOT NULL,
@@ -109,8 +105,8 @@ CREATE TABLE `record` (
 -- ----------------------------
 --  Table structure for `record_correspondence`
 -- ----------------------------
-DROP TABLE IF EXISTS `record_correspondence`;
-CREATE TABLE `record_correspondence` (
+--DROP TABLE IF EXISTS `record_correspondence`;
+CREATE TABLE IF NOT EXISTS `record_correspondence` (
   `doctor` varchar(255),
   `id` int(255) NOT NULL,
   `note_id` int(255) NOT NULL AUTO_INCREMENT,
@@ -126,8 +122,8 @@ CREATE TABLE `record_correspondence` (
 -- ----------------------------
 --  Table structure for `record_diagnosis`
 -- ----------------------------
-DROP TABLE IF EXISTS `record_diagnosis`;
-CREATE TABLE `record_diagnosis` (
+--DROP TABLE IF EXISTS `record_diagnosis`;
+CREATE TABLE IF NOT EXISTS `record_diagnosis` (
   `id` int(255) NOT NULL,
   `date` date NOT NULL,
   `doctor` varchar(255) NOT NULL,
@@ -141,8 +137,8 @@ CREATE TABLE `record_diagnosis` (
 -- ----------------------------
 --  Table structure for `record_doctor_exam`
 -- ----------------------------
-DROP TABLE IF EXISTS `record_doctor_exam`;
-CREATE TABLE `record_doctor_exam` (
+--DROP TABLE IF EXISTS `record_doctor_exam`;
+CREATE TABLE IF NOT EXISTS `record_doctor_exam` (
   `id` int(255) NOT NULL,
   `doctor` varchar(255) NOT NULL,
   `date` date NOT NULL,
@@ -156,8 +152,8 @@ CREATE TABLE `record_doctor_exam` (
 -- ----------------------------
 --  Table structure for `record_insurance`
 -- ----------------------------
-DROP TABLE IF EXISTS `record_insurance`;
-CREATE TABLE `record_insurance` (
+--DROP TABLE IF EXISTS `record_insurance`;
+CREATE TABLE IF NOT EXISTS `record_insurance` (
   `id` int(255) NOT NULL,
   `date` date NOT NULL,
   `madmin` varchar(255) NOT NULL,
@@ -172,8 +168,8 @@ CREATE TABLE `record_insurance` (
 -- ----------------------------
 --  Table structure for `record_raw`
 -- ----------------------------
-DROP TABLE IF EXISTS `record_raw`;
-CREATE TABLE `record_raw` (
+--DROP TABLE IF EXISTS `record_raw`;
+CREATE TABLE IF NOT EXISTS `record_raw` (
   `id` int(11) NOT NULL,
   `description` char(255) NOT NULL,
   `file` binary(255) NOT NULL,
@@ -185,8 +181,8 @@ CREATE TABLE `record_raw` (
 -- ----------------------------
 --  Table structure for `record_testresult`
 -- ----------------------------
-DROP TABLE IF EXISTS `record_testresult`;
-CREATE TABLE `record_testresult` (
+--DROP TABLE IF EXISTS `record_testresult`;
+CREATE TABLE IF NOT EXISTS `record_testresult` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL,
   `doctor` varchar(255) NOT NULL,
@@ -201,8 +197,8 @@ CREATE TABLE `record_testresult` (
 
 --  Table structure for `user`
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
+--DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `Fname` varchar(255) NOT NULL,
@@ -216,8 +212,8 @@ CREATE TABLE `user` (
 -- ----------------------------
 --  Table structure for `user_permissions_list`
 -- ----------------------------
-DROP TABLE IF EXISTS `user_permissions_list`;
-CREATE TABLE `user_permissions_list` (
+--DROP TABLE IF EXISTS `user_permissions_list`;
+CREATE TABLE IF NOT EXISTS `user_permissions_list` (
   `role` varchar(255) NOT NULL,
   `default_permissions` varchar(2550) NOT NULL,
   PRIMARY KEY (`role`)
@@ -226,8 +222,8 @@ CREATE TABLE `user_permissions_list` (
 -- ----------------------------
 --  Table structure for `user_role_list`
 -- ----------------------------
-DROP TABLE IF EXISTS `user_role_list`;
-CREATE TABLE `user_role_list` (
+--DROP TABLE IF EXISTS `user_role_list`;
+CREATE TABLE IF NOT EXISTS `user_role_list` (
   `role` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`role`)
@@ -236,8 +232,8 @@ CREATE TABLE `user_role_list` (
 -- ----------------------------
 --  Table structure for `permissions_list`
 -- ----------------------------
-DROP TABLE IF EXISTS `permissions_list`;
-CREATE TABLE `permissions_list` (
+--DROP TABLE IF EXISTS `permissions_list`;
+CREATE TABLE IF NOT EXISTS `permissions_list` (
   `permission` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`permission`)
