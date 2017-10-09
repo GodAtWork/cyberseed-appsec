@@ -13,6 +13,7 @@
 
  Date: 10/01/2017 11:26:54 AM
 */
+CREATE DATABASE IF NOT EXISTS appsecsage;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -212,8 +213,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- ----------------------------
 --  Table structure for `user_permissions_list`
 -- ----------------------------
---DROP TABLE IF EXISTS `user_permissions_list`;
-CREATE TABLE IF NOT EXISTS `user_permissions_list` (
+DROP TABLE IF EXISTS `user_permissions_list`;
+CREATE TABLE `user_permissions_list` (
   `role` varchar(255) NOT NULL,
   `default_permissions` varchar(2550) NOT NULL,
   PRIMARY KEY (`role`)
@@ -222,8 +223,8 @@ CREATE TABLE IF NOT EXISTS `user_permissions_list` (
 -- ----------------------------
 --  Table structure for `user_role_list`
 -- ----------------------------
---DROP TABLE IF EXISTS `user_role_list`;
-CREATE TABLE IF NOT EXISTS `user_role_list` (
+DROP TABLE IF EXISTS `user_role_list`;
+CREATE TABLE `user_role_list` (
   `role` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`role`)
@@ -232,8 +233,8 @@ CREATE TABLE IF NOT EXISTS `user_role_list` (
 -- ----------------------------
 --  Table structure for `permissions_list`
 -- ----------------------------
---DROP TABLE IF EXISTS `permissions_list`;
-CREATE TABLE IF NOT EXISTS `permissions_list` (
+DROP TABLE IF EXISTS `permissions_list`;
+CREATE TABLE `permissions_list` (
   `permission` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`permission`)

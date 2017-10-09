@@ -11,7 +11,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @ImportResource("classpath:app-config.xml")
-@EnableSwagger2
+//@EnableSwagger2
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class ServerApplication {
 

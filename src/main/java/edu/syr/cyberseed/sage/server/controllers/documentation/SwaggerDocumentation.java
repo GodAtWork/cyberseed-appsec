@@ -3,9 +3,9 @@ package edu.syr.cyberseed.sage.server.controllers.documentation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
+//@Controller
 public class SwaggerDocumentation {
-    @RequestMapping("/")
+   // @RequestMapping("/")
     public String home() {
         return "redirect:swagger-ui.html";
     }
