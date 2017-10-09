@@ -20,6 +20,7 @@ public class ServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ServerApplication.class, args);
         logger.info("CyberSeed 2017 SaGe Server Application Startup.");
+        System.out.println("CyberSeed 2017 SaGe Server Application Startup");
 	}
 
 }
