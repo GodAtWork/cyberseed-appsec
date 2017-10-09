@@ -90,4 +90,48 @@ public class SMIRKAdministrationController {
         return resultRecord;
     }
 
+    @Secured({"ROLE_SYSTEM_ADMIN"})
+    @RequestMapping(value = "/dumpDb", method = RequestMethod.GET)
+    public String dump() {
+    String line="";
+    String save="";
+
+        String command = "mysqldump --all-databases --xml --user root --password=appsec";
+        logger.info("command");
+
+        Process proc = null;
+        try {
+            proc = Runtime.getRuntime().exec(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Read the output
+
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        String abc="";
+        try {
+            while((line = reader.readLine()) != null) {
+                abc=abc+reader.readLine()+"\n";
+            }
+            logger.info(abc);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        logger.info("sending");
+        return abc;
+
+
+    }
+
 }
+
+//mysqldump --all-databases --xml --user root --password=appsec  > abc.xml
+
