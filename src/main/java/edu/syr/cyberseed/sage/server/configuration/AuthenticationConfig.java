@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,6 +36,8 @@ public class AuthenticationConfig extends WebMvcConfigurerAdapter {
             http.httpBasic().and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and().authorizeRequests()
+                    .antMatchers(HttpMethod.OPTIONS, "/**").denyAll()
+                    .antMatchers(HttpMethod.TRACE, "/**").denyAll()
                     .antMatchers("/createPatient").access("hasRole('ROLE_ADD_PATIENT')")
                     .antMatchers("/createDoctor").access("hasRole('ROLE_ADD_DOCTOR')")
                     .antMatchers("/createNurse").access("hasRole('ROLE_ADD_NURSE')")
