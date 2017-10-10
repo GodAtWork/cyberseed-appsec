@@ -6,6 +6,10 @@ Server (https://github.com/kjfallon/cyberseed-appsec)
 Integration Test Client (https://github.com/kjfallon/cyberseed-appsec-integration-client)  
 Backdoor Client (https://github.com/kjfallon/cyberseed-appsec-backdoor-client)
 
+SMIRK is a web based system intended to allow users (Doctors, Nurses, Patients, Insurance Providers, and Medical Administrators) to securely share medical files. The system will be comprised of 3 major components: a server application, an integration test client application, and a backdoor client application. 
+
+The server application will expose web accessible interfaces that comply to the interface requirements in this document. These interfaces will allow the client to administer the application state (user info, permissions, etc.), and store and retrieve medical information. 
+
 ### Database
 
 - [x] Design Schema
