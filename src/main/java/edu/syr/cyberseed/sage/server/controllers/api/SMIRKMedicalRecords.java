@@ -639,7 +639,7 @@ public class SMIRKMedicalRecords {
                                 finalViewPermissions));
                         logger.info("Created  MedicalRecord with id " + savedMedicalRecord.getId());
 
-                        // create the Diagnosis record\
+                        // create the Diagnosis record
                         InsuranceClaimRecord savedInsuranceClaimRecord = insuranceClaimRecordRepository.save(new InsuranceClaimRecord(submittedData.getId(),
                                 submittedData.getMedadUsername(),
                                 submittedData.getDate(),

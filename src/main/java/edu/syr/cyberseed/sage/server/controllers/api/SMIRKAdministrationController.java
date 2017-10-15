@@ -58,21 +58,18 @@ public class SMIRKAdministrationController {
     }
 
     @Secured({"ROLE_SYSTEM_ADMIN"})
-    @RequestMapping(value = "/getBackupCfg/{submittedId}", method = RequestMethod.GET)
-    public BackupConfig viewRecord(@PathVariable String submittedId) {
+    @RequestMapping(value = "/getBackupCfg", method = RequestMethod.GET)
+    public BackupConfig viewRecord() {
 
-        submittedId=submittedId+".cfg";
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         BackupConfig resultRecord = new BackupConfig();
-
         // first find the base MedicalRecord
         BackupConfig record = new BackupConfig();
         String owner = filename;
-        logger.info("Owner of MedicalRecord " + submittedId + " is " + owner);
 
 
         // check if currentuser is the owner or is in the view list
-        if (submittedId.equals(filename)) {
+        if (filename.contains("db_backup_2017")) {
 
             resultRecord.setAnswer("yes");
             resultRecord.setOffsiteServerUsername(user);
