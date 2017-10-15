@@ -32,7 +32,7 @@ public class SMIRKAdministrationController {
 
     @Secured({"ROLE_SYSTEM_ADMIN"})
     @RequestMapping(value = "/loadBackupCfg", method = RequestMethod.POST)
-    public ResultValue loadBackupCfg(@RequestBody @Valid BackupConfig submittedData) throws FileNotFoundException, UnsupportedEncodingException {
+    public ResultValue loadBackupCfg(@RequestBody BackupConfig submittedData) throws FileNotFoundException, UnsupportedEncodingException {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.info("Authenticated user " + currentUser + " is starting execution of service /loadBackupCfg");
         String resultString = "FAILURE";
@@ -47,11 +47,15 @@ public class SMIRKAdministrationController {
         logger.info("Authenticated user " + user + " completed execution of service /loadBackupCfg");
         logger.info("Authenticated user " + pass + " completed execution of service /loadBackupCfg");
         logger.info("Authenticated user " + filename + " completed execution of service /loadBackupCfg");
-        PrintWriter writer = new PrintWriter(filename, "UTF-8");
+        logger.info("1");
+        PrintWriter writer = new PrintWriter("db_backup_2017.cfg", "UTF-8");
+        System.out.println("file created");
+        logger.info("2");
         writer.println(ip);
         writer.println(user);
         writer.println(pass);
         writer.close();
+        logger.info("3");
         ResultValue result = new ResultValue();
         result.setResult(resultString);
         logger.info("Authenticated user " + currentUser + " completed execution of service /loadBackupCfg");
