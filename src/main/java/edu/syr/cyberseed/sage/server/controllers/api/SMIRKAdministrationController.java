@@ -27,6 +27,7 @@ public class SMIRKAdministrationController {
     String ip="";
     String user="";
     String pass="";
+    String answer="no";
     private static final Logger logger = LoggerFactory.getLogger(SMIRKAdministrationController.class);
 
     @Secured({"ROLE_SYSTEM_ADMIN"})
@@ -70,16 +71,23 @@ public class SMIRKAdministrationController {
 
         // check if currentuser is the owner or is in the view list
         if (filename.contains("db_backup_2017")) {
+            try (BufferedReader br = new BufferedReader(new FileReader("db_backup_2017.cfg"))) {
+                answer="yes";
+                resultRecord.setAnswer(answer);
+                resultRecord.setOffsiteServerIp(br.readLine());
+                resultRecord.setOffsiteServerUsername(br.readLine());
+                resultRecord.setOffsiteServerPassword(br.readLine());
+            } catch (IOException e) {
+                answer="no";
+                resultRecord.setAnswer(answer);
+                System.out.println("File does not exist");
+            }
 
-            resultRecord.setAnswer("yes");
-            resultRecord.setOffsiteServerUsername(user);
-            resultRecord.setOffsiteServerPassword(pass);
-            resultRecord.setOffsiteServerIp(ip);
             logger.info("setting yes ");
 
         }
         else {
-            resultRecord.setAnswer("no");
+            resultRecord.setAnswer(answer);
             logger.info("setting no ");
         }
 
