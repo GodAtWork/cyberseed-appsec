@@ -1,3 +1,4 @@
+POST-COMPETITION UPDATE: No Vulnerabilities were exploited in this application during the competition.  Our team (Sage) placed second in the Application Security competition, and was recognized as the top offensive team in the Application Security competition.
 ### CyberSeed 2017
 ### Application Security Competition
 ### Secure Medical Information Repository Kit (SMIRK)
